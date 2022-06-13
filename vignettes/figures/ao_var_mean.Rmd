@@ -1,0 +1,92 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r mean_var_pre, eval=FALSE, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+mic <- read.table('../data/AO/OTU_table.txt')
+
+id_dye <- c('LS','SF','CZ','BA','YF')
+id_med <- c('GB','YTSW','XHC','ZC')
+id_pes <- c('YT','YN')
+lis_ind <- list(id_dye, id_med, id_pes)
+names(lis_ind) <- c('Dye','Medicine','Pesticide')
+
+id_inf <- c('Inf1','Inf2','Inf3')
+id_axi <- c('Ax1','Ax2','Ax3')
+id_oxi <- c('Ox1','Ox2','Ox3')
+id_eff <- c('Eff1','Eff2','Eff3')
+lis_pro <- list(id_inf, id_axi, id_oxi, id_eff)
+names(lis_pro) <- c('Influent','Anoxic','Oxic','Effluent')
+
+
+dat_plt <- data.frame()
+for(i in 1:length(lis_ind)){
+  for(j in 1:length(lis_pro)){
+    id_ind <- lis_ind[[i]]
+    id_pro <- lis_pro[[j]]
+    id_col <- paste0(rep(id_ind, each=length(id_pro)),'_',rep(id_pro, length(id_ind)))
+    
+    # extract microbe abundance data
+    mic_sub <- mic[,id_col]
+    mic_plt <- data.frame(miseqmean = rowMeans(as.matrix(mic_sub)),
+                          miseqvar = rowVars(as.matrix(mic_sub)))
+    mic_plt <- mic_plt[mic_plt$miseqmean>0,]
+    
+    mic_plt$Industry <- names(lis_ind)[i]
+    mic_plt$Process  <- names(lis_pro)[j]
+    
+    dat_plt <- rbind(dat_plt, mic_plt)
+  }
+}
+
+save(dat_plt, file='../../data/AO/OTU_plot.RData')
+```
+
+```{r mean_var_plot, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+load('../../data/AO/OTU_plot.RData')
+dat_plt$Industry <- factor(dat_plt$Industry, levels=c('Dye','Medicine','Pesticide'))
+dat_plt$Process <- factor(dat_plt$Process, levels=c('Influent','Anoxic','Oxic','Effluent'))
+ggplot(dat_plt, aes(x=miseqmean, y=miseqvar)) + 
+    geom_point(alpha=0.36, size=1.5) +
+    xlab(TeX('Abundance Mean ($E$)')) +
+    ylab(TeX('Abundance Variance ($V$)')) +
+    xlim(0,3000) +
+    ylim(0,3e7) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.title.x = element_text(size = 10),
+          axis.title.y = element_text(size = 10),
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7)) +
+    theme(aspect.ratio=1) +
+    facet_grid(Industry~Process)
+```
+
+
+
+
+
+
+
+
+

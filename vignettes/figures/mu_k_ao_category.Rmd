@@ -1,0 +1,141 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(matrixStats)   # for matrix computations
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+sapply(list.files(pattern="[.]R$", path="../../R/PMCosm", full.names=TRUE), source)
+
+mic <- read.table('../../data/AO/OTU_table.txt')
+
+id_dye <- c('LS','SF','CZ','BA','YF')
+id_med <- c('GB','YTSW','XHC','ZC')
+id_pes <- c('YT','YN')
+lis_ind <- list(id_dye, id_med, id_pes)
+names(lis_ind) <- c('Dye','Medicine','Pesticide')
+
+id_inf <- c('Inf1','Inf2','Inf3')
+id_axi <- c('Ax1','Ax2','Ax3')
+id_oxi <- c('Ox1','Ox2','Ox3')
+id_eff <- c('Eff1','Eff2','Eff3')
+lis_pro <- list(id_inf, id_axi, id_oxi, id_eff)
+names(lis_pro) <- c('Influent','Anoxic','Oxic','Effluent')
+
+# for region
+# 1: influent
+# 2: anoxic
+# 3: oxic
+# 4: effluent
+
+for(region in 1:4){
+  id_col <- c()
+  # extract samples in target procedure/region
+  for(i in 1:length(lis_ind)){
+    id_ind <- lis_ind[[i]]
+    id_pro <- lis_pro[[region]]
+    id_col <- c(id_col,
+                paste0(rep(id_ind, each=length(id_pro)),'_',rep(id_pro, length(id_ind))))
+  }
+  # extract microbes in target samples
+  mic_sub <- mic[,id_col]
+  mic_sub <- mic_sub[rowMeans(mic_sub)>0,]
+  
+  # ectract rare taxa id
+  id_rt <- is_rt(mic_sub)
+  # extract moderate taxa id
+  id_mt <- is_mt(mic_sub)
+  # extract abundant taxa id
+  id_at <- is_at(mic_sub)
+  # extract conditionally rare taxa id
+  id_crt <- is_crt(mic_sub)
+  # extract conditionally abundant taxa id
+  id_cat <- is_cat(mic_sub)
+  # extract conditionally rare or abundant taxa id
+  id_crat <- is_crat(mic_sub)
+  
+  save(id_rt, id_mt, id_at, id_crt, id_cat, id_crat,
+       file=paste0('../../output/AO/taxa_category_',tolower(names(lis_pro)[region]), '.RData'))
+}
+```
+
+```{r mu_k_ao_category, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../../output/AO/taxa_category_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_rt, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_mt, 'MT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_at, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_crt, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_cat, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_crat, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+rownames(param_plt) <- c(1:nrow(param_plt))
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=str_to_title(vec_process))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('RT','MT','AT','CRT','CAT','CRAT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\mu)}')) +
+  xlab(TeX('\\log{(k)}')) +
+  ggtitle(TeX('')) +
+  #xlim(-5,15) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#8dd3c7','#bebada',
+                                 '#80b1d3','#fdb462','#b3de69')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=7),
+        strip.text = element_text(size = 7),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+```
+
+
+
+
+
+
+
+

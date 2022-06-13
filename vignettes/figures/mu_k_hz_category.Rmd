@@ -1,0 +1,172 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(matrixStats)   # for matrix computations
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+sapply(list.files(pattern="[.]R$", path="../../R/PMCosm", full.names=TRUE), source)
+
+# load abundance data
+mic <- read.table(file='../../data/2018/resample_feature-table.txt',
+                  header=TRUE,row.names=1)
+# construct column id
+bay_loci <- c('HB1.1','HB1.2','HB1.3','HB2.1','HB2.2','HB2.3',
+              'HB3.1','HB3.2','HB3.3','HB4.1','HB4.2','HB4.3',
+              'HB5.1','HB5.2','HB5.3','HB6.1','HB6.2','HB6.3',
+              'HB7.1','HB7.2','HB7.3','HB8.1','HB8.2','HB8.3',
+              'HB9.1','HB9.2','HB9.3','HB10.1','HB10.2','HB10.3')
+era_sy_loci <- c('SY1.1','SY1.2','SY1.3','SY2.1','SY2.2','SY2.3',
+                 'SY3.1','SY3.2','SY3.3','SY4.1','SY4.2','SY4.3',
+                 'SY5.1','SY5.2','SY5.3','SY6.1','SY6.2','SY6.3')
+era_jx_loci <- c('JX1.1','JX1.2','JX1.3','JX2.1','JX2.2','JX2.3',
+                 'JX3.1','JX3.2','JX3.3','JX4.1','JX4.2','JX4.3',
+                 'JX5.1','JX5.2','JX5.3','JX6.1','JX6.2','JX6.3')
+
+# for bay
+# extract microbes in target samples
+mic_sub <- mic[,bay_loci]
+mic_sub <- mic_sub[rowMeans(mic_sub)>0,] #24383
+# ectract rare taxa id
+id_rt <- is_rt(mic_sub)                  #19941
+# extract moderate taxa id
+id_mt <- is_mt(mic_sub)                  #   26
+# extract abundant taxa id
+id_at <- is_at(mic_sub)                  #    1
+# extract conditionally rare taxa id
+id_crt <- is_crt(mic_sub)                # 4359
+# extract conditionally abundant taxa id
+id_cat <- is_cat(mic_sub)                #   28
+# extract conditionally rare or abundant taxa id
+id_crat <- is_crat(mic_sub)              #   28
+length(id_rt)+length(id_mt)+length(id_at)+length(id_crt)+length(id_cat)+length(id_crat)
+save(id_rt, id_mt, id_at, id_crt, id_cat, id_crat,
+     file=paste0('../../output/HZ/taxa_category_bay.RData'))
+
+# for era
+# extract microbes in target samples
+mic_sub <- mic[,c(era_sy_loci,era_jx_loci)]
+mic_sub <- mic_sub[rowMeans(mic_sub)>0,]       #33606
+# ectract rare taxa id
+id_rt <- is_rt(mic_sub)                        #28077
+# extract moderate taxa id
+id_mt <- is_mt(mic_sub)                        #   42
+# extract abundant taxa id
+id_at <- is_at(mic_sub)                        #    1
+# extract conditionally rare taxa id
+id_crt <- is_crt(mic_sub)                      # 5391
+# extract conditionally abundant taxa id
+id_cat <- is_cat(mic_sub)                      #   54
+# extract conditionally rare or abundant taxa id
+id_crat <- is_crat(mic_sub)
+# check no intersect
+length(id_rt)+length(id_mt)+length(id_at)+length(id_crt)+length(id_cat)+length(id_crat)
+save(id_rt, id_mt, id_at, id_crt, id_cat, id_crat,
+     file=paste0('../../output/HZ/taxa_category_era.RData'))
+```
+
+```{r mu_k_hz_category, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+# load parameters mle
+vec_region <- c('bay','era')
+param_plt <- data.frame()
+for(item in vec_region){
+  load(paste0('../../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Region <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../../output/HZ/taxa_category_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_rt, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_mt, 'MT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_at, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_crt, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_cat, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% id_crat, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+rownames(param_plt) <- c(1:nrow(param_plt))
+
+param_plt$Region <- ifelse(param_plt$Region=='Era','ERA',param_plt$Region)
+param_plt$Region <- factor(param_plt$Region,
+                           levels=c('Bay','ERA'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('RT','MT','AT','CRT','CAT','CRAT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\mu)}')) +
+  xlab(TeX('\\log{(k)}')) +
+  ggtitle(TeX('')) +
+  #xlim(-5,15) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Region~., scale='free') +
+  scale_colour_manual(values = c('#8dd3c7','#bebada','#fb8072',
+                                 '#80b1d3','#fdb462','#b3de69')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=7),
+        strip.text = element_text(size = 7),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\mu)}')) +
+  xlab(TeX('\\log{(k)}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,15) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Region~., scale='free') +
+  scale_colour_manual(values = c('#8dd3c7','#bebada','#fb8072',
+                                 '#80b1d3','#fdb462','#b3de69')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=7),
+        strip.text = element_text(size = 7),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+
+```
+
+
+
+
+
+
+
+

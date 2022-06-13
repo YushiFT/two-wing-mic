@@ -1,0 +1,328 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+#install.packages('devtools')
+#library(devtools)
+#devtools::install_github("gavinsimpson/ggvegan")
+
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(ggh4x)         # for grid plot with free axis
+library(vegan)         # for example data in pcoa analysis
+library(ggvegan)       # for ggplot vegan results
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+sapply(list.files(pattern="[.]R$", path="../../R/PMCosm", full.names=TRUE), source)
+# load environment factors
+env <- read.csv('../../data/AO/env_factors.csv',row.names=1)
+# load abundance data
+mic <- read.table('../../data/AO/OTU_table.txt')
+id_dye <- c('LS','SF','CZ','BA','YF')
+id_med <- c('GB','YTSW','XHC','ZC')
+id_pes <- c('YT','YN')
+lis_ind <- list(id_dye, id_med, id_pes)
+names(lis_ind) <- c('Dye','Medicine','Pesticide')
+
+id_inf <- c('Inf1','Inf2','Inf3')
+id_axi <- c('Ax1','Ax2','Ax3')
+id_oxi <- c('Ox1','Ox2','Ox3')
+id_eff <- c('Eff1','Eff2','Eff3')
+lis_pro <- list(id_inf, id_axi, id_oxi, id_eff)
+names(lis_pro) <- c('Influent','Anoxic','Oxic','Effluent')
+
+for(region in 1:4){
+  # extract column id
+  id_col <- c()
+  for(i in 1:length(lis_ind)){
+    id_ind <- lis_ind[[i]]
+    id_pro <- lis_pro[[region]]
+    id_col <- c(id_col, paste0(rep(id_ind, each=length(id_pro)),'_',rep(id_pro, length(id_ind))))
+  }
+  # extract row id
+  load(paste0('../../output/AO/param_trio_',tolower(names(lis_pro)[region]),'.RData'))
+  param_trio <- param_trio[param_trio$k!=Inf,]
+  id_mu_wing <- rownames(param_trio[param_trio$k<exp(7),])
+  id_k_wing <- rownames(param_trio[param_trio$k>exp(7),])
+  # extract abundance
+  mic_sub_mu <- mic[id_mu_wing, id_col]
+  mic_sub_k  <- mic[id_k_wing, id_col]
+  mic_sub <- mic[,id_col]
+  mic_sub <- mic_sub[rowMeans(mic_sub)>0,]
+  
+  # cca analysis
+  # original data set, species on columns
+  # total microbial counts in: influent anoxic oxic effluent
+  # print(nrow(mic_sub_mu))          1487   2666   2780   3059
+  # print(nrow(mic_sub_k))           5512   9650  10807  10013
+  # print(nrow(mic_sub))             7003  12318  13588  13079
+  # nrow(mic_sub_mu)/nrow(mic_sub) 0.2123 0.2164 0.2046 0.2339
+  cc_mu  <- cca(t(mic_sub_mu), env[id_col,]) 
+  cc_k   <- cca(t(mic_sub_k),  env[id_col,])
+  cc_all <- cca(t(mic_sub),    env[id_col,])
+  save(cc_mu, cc_k, cc_all, 
+       file=paste0('../../output/AO/cca_ori_',tolower(names(lis_pro)[region]),'.RData'))
+} 
+  
+```
+
+```{r cca_plot, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+load('../../output/AO/cca_ori_influent.RData')
+cc_mu_influent <- cc_mu
+cc_k_influent <- cc_k
+cc_all_influent <- cc_all
+load('../../output/AO/cca_ori_anoxic.RData')
+cc_mu_anoxic <- cc_mu
+cc_k_anoxic <- cc_k
+cc_all_anoxic <- cc_all
+load('../../output/AO/cca_ori_oxic.RData')
+cc_mu_oxic <- cc_mu
+cc_k_oxic <- cc_k
+cc_all_oxic <- cc_all
+load('../../output/AO/cca_ori_effluent.RData')
+cc_mu_effluent <- cc_mu
+cc_k_effluent <- cc_k
+cc_all_effluent <- cc_all
+
+g_inf_all <- autoplot(cc_all_influent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Influent all')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = c(0.8,0.8),
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_inf_mu <- autoplot(cc_mu_influent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Influent $\\mu$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_inf_k <- autoplot(cc_k_influent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Influent $k$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+
+g_ano_all <- autoplot(cc_all_anoxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Anoxic all')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_ano_mu <- autoplot(cc_mu_anoxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Anoxic $\\mu$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_ano_k <- autoplot(cc_k_anoxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Anoxic $k$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+
+g_oxi_all <- autoplot(cc_all_oxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Oxic all')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_oxi_mu <- autoplot(cc_mu_oxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Oxic $\\mu$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_oxi_k <- autoplot(cc_k_oxic) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Oxic $k$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_eff_all <- autoplot(cc_all_effluent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Effluent all')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_eff_mu <- autoplot(cc_mu_effluent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Effluent $\\mu$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_eff_k <- autoplot(cc_k_effluent) +
+  theme_bw() +
+  xlab(TeX('CCA1')) +
+  ylab(TeX('CCA2')) +
+  ggtitle(TeX('Effluent $k$-wing')) +
+  theme(plot.title=element_text(size = 10, hjust = 0.5),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+
+plot_grid(g_inf_all, g_ano_all, nrow=1, align='v')
+plot_grid(g_oxi_all, g_eff_all, nrow=1, align='v')
+
+plot_grid(g_inf_mu, g_ano_mu, nrow=1, align='v')
+plot_grid(g_oxi_mu, g_eff_mu, nrow=1, align='v')
+
+plot_grid(g_inf_k, g_ano_k, nrow=1, align='v')
+plot_grid(g_oxi_k, g_eff_k, nrow=1, align='v')
+
+```
+
+
+
+
+
+
+
+
+

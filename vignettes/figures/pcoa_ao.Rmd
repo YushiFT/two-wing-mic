@@ -1,0 +1,161 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(ggh4x)         # for grid plot with free axis
+library(ecodist)       # for pcoa analysis
+library(vegan)         # for example data in pcoa analysis
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+sapply(list.files(pattern="[.]R$", path="../../R/PMCosm", full.names=TRUE), source)
+# load abundance data
+mic <- read.table('../../data/AO/OTU_table.txt')
+id_dye <- c('LS','SF','CZ','BA','YF')
+id_med <- c('GB','YTSW','XHC','ZC')
+id_pes <- c('YT','YN')
+lis_ind <- list(id_dye, id_med, id_pes)
+names(lis_ind) <- c('Dye','Medicine','Pesticide')
+
+id_inf <- c('Inf1','Inf2','Inf3')
+id_axi <- c('Ax1','Ax2','Ax3')
+id_oxi <- c('Ox1','Ox2','Ox3')
+id_eff <- c('Eff1','Eff2','Eff3')
+lis_pro <- list(id_inf, id_axi, id_oxi, id_eff)
+names(lis_pro) <- c('Influent','Anoxic','Oxic','Effluent')
+
+for(region in 1:4){
+  # extract column id
+  id_col <- c()
+  for(i in 1:length(lis_ind)){
+    id_ind <- lis_ind[[i]]
+    id_pro <- lis_pro[[region]]
+    id_col <- c(id_col, paste0(rep(id_ind, each=length(id_pro)),'_',rep(id_pro, length(id_ind))))
+  }
+  # extract row id
+  load(paste0('../../output/AO/param_trio_',tolower(names(lis_pro)[region]),'.RData'))
+  param_trio <- param_trio[param_trio$k!=Inf,]
+  id_mu_wing <- rownames(param_trio[param_trio$k<exp(7),])
+  id_k_wing <- rownames(param_trio[param_trio$k>exp(7),])
+  # extract abundance
+  mic_sub_mu <- mic[id_mu_wing, id_col]
+  mic_sub_k  <- mic[id_k_wing, id_col]
+  mic_sub <- mic[,id_col]
+  mic_sub <- mic_sub[rowMeans(mic_sub)>0,]
+  
+  # pcoa analysis
+  # original data set, species on columns
+  bray_mu  <- vegdist(t(mic_sub_mu), method='bray')
+  bray_k   <- vegdist(t(mic_sub_k),  method='bray')
+  bray_all <- vegdist(t(mic_sub), method='bray')
+  pcoa_mu  <- pco(bray_mu,  negvals='zero', dround=0)
+  pcoa_k   <- pco(bray_k,   negvals='zero', dround=0)
+  pcoa_all <- pco(bray_all, negvals='zero', dround=0)
+  
+  save(pcoa_mu, pcoa_k, pcoa_all, 
+       file=paste0('../../output/AO/pcoa_',tolower(names(lis_pro)[region]),'.RData'))
+}
+```
+
+```{r pcoa, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+dat_plt <- data.frame()
+vec_process <- c('influent','anoxic','oxic','effluent')
+lab_site <- c(rep(c('LS','SF','CZ','BA','YF','GB','YTSW','XHC','ZC','YT','YN'), each=3))
+for(item in vec_process){
+  load(paste0('../../output/AO/pcoa_',item,'.RData'))
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_mu$vectors[,1],
+                                       PCoA2=pcoa_mu$vectors[,2],
+                                       Site=lab_site,
+                                       Wing='mu-wing',
+                                       Procedure=str_to_title(item)))
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_k$vectors[,1],
+                                       PCoA2=pcoa_k$vectors[,2],
+                                       Site=lab_site,
+                                       Wing='k-wing',
+                                       Procedure=str_to_title(item)))
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_all$vectors[,1],
+                                       PCoA2=pcoa_all$vectors[,2],
+                                       Site=lab_site,
+                                       Wing='all',
+                                       Procedure=str_to_title(item)))
+
+}
+
+dat_plt$Wing <- factor(dat_plt$Wing, levels=c('all','mu-wing','k-wing'))
+dat_plt$Procedure <- factor(dat_plt$Procedure, levels=str_to_title(vec_process))
+
+
+g_pre <- ggplot(dat_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
+  geom_point() +
+  theme_bw() +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
+  ggtitle('') +
+  theme(plot.title=element_text(hjust=0, size=rel(0.0)),
+        #legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7)) +
+  scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
+                               '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
+                               '#cab2d6','#6a3d9a','#ffff99')) +
+  facet_grid2(Wing~Procedure, scales='free')
+
+g_leg <- get_legend(g_pre)
+
+
+g_main <- ggplot(dat_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
+  geom_point(size=0.8, alpha=0.8) +
+  theme_bw() +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
+  ggtitle('') +
+  theme(plot.title=element_text(hjust=0, size=rel(0.0)),
+        legend.position = "none",
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6)) +
+  scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
+                               '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
+                               '#cab2d6','#6a3d9a','#ffff99')) +
+  facet_grid2(Wing~Procedure, scales='free', independent = "all")
+
+plot_grid(g_main, g_leg,
+          rel_widths = c(5, 1), nrow=1)
+```
+
+
+
+
+
+
+
+
+

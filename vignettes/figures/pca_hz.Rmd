@@ -1,0 +1,191 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(ggh4x)         # for grid plot with free axis
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+sapply(list.files(pattern="[.]R$", path="../../R/PMCosm", full.names=TRUE), source)
+# load abundance data
+mic <- read.table(file='../../data/2018/resample_feature-table.txt',
+                  header=TRUE,row.names=1)
+# construct column id
+bay_loci <- c('HB1.1','HB1.2','HB1.3','HB2.1','HB2.2','HB2.3',
+              'HB3.1','HB3.2','HB3.3','HB4.1','HB4.2','HB4.3',
+              'HB5.1','HB5.2','HB5.3','HB6.1','HB6.2','HB6.3',
+              'HB7.1','HB7.2','HB7.3','HB8.1','HB8.2','HB8.3',
+              'HB9.1','HB9.2','HB9.3','HB10.1','HB10.2','HB10.3')
+era_sy_loci <- c('SY1.1','SY1.2','SY1.3','SY2.1','SY2.2','SY2.3',
+                 'SY3.1','SY3.2','SY3.3','SY4.1','SY4.2','SY4.3',
+                 'SY5.1','SY5.2','SY5.3','SY6.1','SY6.2','SY6.3')
+era_jx_loci <- c('JX1.1','JX1.2','JX1.3','JX2.1','JX2.2','JX2.3',
+                 'JX3.1','JX3.2','JX3.3','JX4.1','JX4.2','JX4.3',
+                 'JX5.1','JX5.2','JX5.3','JX6.1','JX6.2','JX6.3')
+
+# for bay
+# construct row id
+load('../../output/HZ/param_trio_bay.RData')
+param_trio <- param_trio[param_trio$k!=Inf,]
+id_mu_wing <- rownames(param_trio[param_trio$k<exp(7),])
+id_k_wing <- rownames(param_trio[param_trio$k>exp(7),])
+# extract abundance
+mic_sub_mu <- mic[id_mu_wing, bay_loci]   #4046
+mic_sub_k  <- mic[id_k_wing, bay_loci]   #20285
+mic_sub <- mic[,bay_loci]
+mic_sub <- mic_sub[rowMeans(mic_sub)>0,] #24383
+# pca 
+pca_mu  <- pca(mic_sub_mu)
+pca_k   <- pca(mic_sub_k)
+pca_all <- pca(mic_sub)
+save(pca_mu, pca_k, pca_all, file=paste0('../../output/HZ/pca_bay.RData'))
+
+# for era
+# construct row id
+load('../../output/HZ/param_trio_era.RData')  # 33606
+param_trio <- param_trio[param_trio$k!=Inf,]  # 33530
+id_mu_wing <- rownames(param_trio[param_trio$k<exp(7),])
+id_k_wing <- rownames(param_trio[param_trio$k>exp(7),])
+# extract abundance
+mic_sub_mu <- mic[id_mu_wing, c(era_sy_loci, era_jx_loci)] # 5018
+mic_sub_k  <- mic[id_k_wing, c(era_sy_loci, era_jx_loci)]  #28512
+mic_sub <- mic[,c(era_sy_loci, era_jx_loci)]
+mic_sub <- mic_sub[rowMeans(mic_sub)>0,]  # 33606
+# pca 
+pca_mu  <- pca(mic_sub_mu)
+pca_k   <- pca(mic_sub_k)
+pca_all <- pca(mic_sub)
+save(pca_mu, pca_k, pca_all, file=paste0('../../output/HZ/pca_era.RData'))
+
+
+```
+
+```{r pca, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+# for bay
+bay_plt <- data.frame()
+lab_site <- c(rep(c('HB1','HB2','HB3','HB4','HB5','HB6','HB7','HB8','HB9','HB10'), each=3))
+load('../../output/HZ/pca_bay.RData')
+pcs_mu  <- data.frame(t(pca_mu$pc))
+pcs_k   <- data.frame(t(pca_k$pc))
+pcs_all <- data.frame(t(pca_all$pc))
+bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_mu$PC1,
+                                     PC2=pcs_mu$PC2,
+                                     Site=lab_site,
+                                     Wing='mu-wing',
+                                     Region='Bay'))
+bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_k$PC1,
+                                     PC2=pcs_k$PC2,
+                                     Site=lab_site,
+                                     Wing='k-wing',
+                                     Region='Bay'))
+bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_all$PC1,
+                                     PC2=pcs_all$PC2,
+                                     Site=lab_site,
+                                     Wing='all',
+                                     Region='Bay'))
+bay_plt$Site <- factor(bay_plt$Site, 
+                       levels=c('HB1','HB2','HB3','HB4','HB5','HB6','HB7','HB8','HB9','HB10'))
+bay_plt$Wing <- factor(bay_plt$Wing,
+                       levels=c('all','mu-wing','k-wing'))
+
+g_bay <- ggplot(bay_plt, aes(x=PC1, y=PC2, color=Site)) +
+  geom_point(size=0.8, alpha=0.8) +
+  theme_bw() +
+  xlab(TeX('PC1')) +
+  ylab(TeX('PC2')) +
+  ggtitle('') +
+  theme(plot.title=element_text(hjust=0, size=rel(0.0)),
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7)) +
+  scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
+                               '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
+                               '#cab2d6','#6a3d9a')) +
+  facet_grid2(Wing~Region, scales='free', independent = "all")
+
+# for era
+era_plt <- data.frame()
+lab_site <- c(rep(c('SY1','SY2','SY3','SY4','SY5','SY6',
+                    'JX1','JX2','JX3','JX4','JX5','JX6'), each=3))
+load('../../output/HZ/pca_era.RData')
+pcs_mu  <- data.frame(t(pca_mu$pc))
+pcs_k   <- data.frame(t(pca_k$pc))
+pcs_all <- data.frame(t(pca_all$pc))
+era_plt <- rbind(era_plt, data.frame(PC1=pcs_mu$PC1,
+                                     PC2=pcs_mu$PC2,
+                                     Site=lab_site,
+                                     Wing='mu-wing',
+                                     Region='ERA'))
+era_plt <- rbind(era_plt, data.frame(PC1=pcs_k$PC1,
+                                     PC2=pcs_k$PC2,
+                                     Site=lab_site,
+                                     Wing='k-wing',
+                                     Region='ERA'))
+era_plt <- rbind(era_plt, data.frame(PC1=pcs_all$PC1,
+                                     PC2=pcs_all$PC2,
+                                     Site=lab_site,
+                                     Wing='all',
+                                     Region='ERA'))
+era_plt$Site <- factor(era_plt$Site, 
+                       levels=c('SY1','SY2','SY3','SY4','SY5','SY6','JX1','JX2','JX3','JX4','JX5','JX6'))
+era_plt$Wing <- factor(era_plt$Wing,
+                       levels=c('all','mu-wing','k-wing'))
+
+g_era <- ggplot(era_plt, aes(x=PC1, y=PC2, color=Site)) +
+  geom_point(size=0.8, alpha=0.8) +
+  theme_bw() +
+  xlab(TeX('PC1')) +
+  ylab(TeX('PC2')) +
+  ggtitle('') +
+  theme(plot.title=element_text(hjust=0, size=rel(0.0)),
+        aspect.ratio=1,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7)) +
+  scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
+                               '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
+                               '#cab2d6','#6a3d9a','#ffff99','#b15928')) +
+  facet_grid2(Wing~Region, scales='free', independent = "all")
+
+
+
+plot_grid(NULL, g_bay, g_era, NULL,
+          rel_widths = c(1,5,5,1), nrow=1, align='v')
+```
+
+
+
+
+
+
+
+
+

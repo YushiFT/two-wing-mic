@@ -1,0 +1,206 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r mu_k_ao_influent, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  # load mle
+  load(paste0('../../output/AO/param_trio_',item,'.RData'))
+  # load taxa category
+  load(paste0('../../output/AO/taxa_category_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract poisson distributed microbes
+  param_poisson <- param_trio[param_trio$k==Inf,]
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # extract zero-inflated microbes
+  param_zeroinf <- param_trio[param_trio$pi0!=0,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # mean log(mu) of non-rare taxa
+  param_mu <- param_gpm[param_gpm$k<exp(7),]
+  param_mu_nrt <- param_mu[c(id_at,id_cat,id_crat,id_mt),]
+  v_mu <- param_mu_nrt[param_mu_nrt$mu > 0, 'mu']
+  v_mu <- v_mu[!is.na(v_mu)]
+  param_gpm$mean_log_mu_nrt <- mean(log(v_mu))
+  param_plt <- rbind(param_plt, param_gpm)
+}
+rownames(param_plt) <- c(1:nrow(param_plt))
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=str_to_title(vec_process))
+
+
+anno <- read.csv('../../data/AO/OTU_Anno.csv')
+# id_citreitalea <- anno[anno$G=='Acinetobacter','ID']
+id_acinetobacter <- c('OTU_13')
+id_acetoanaerobium <- c('OTU_21')
+id_bacillus <- c('OTU_20')
+id_caldisericum <- c('OTU_9')
+id_enterobacteriaceae <- c('OTU_3')
+#id_pseudomonas <- c('OTU_1')
+id_oligella <- c('OTU_7')
+id_sm1a02 <- c('OTU_11')
+id_uba6140 <- c('OTU_12')
+id_wolinella <- c('OTU_6')
+
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_acinetobacter, 'Acinetobacter', 'Other')
+#param_plt$Microbe <- ifelse(param_plt$ID %in% id_acetoanaerobium, 'Acetoanaerobium', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_bacillus, 'Bacillus', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_caldisericum, 'Caldisericum', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_enterobacteriaceae, 'Enterobacteriaceae', param_plt$Microbe)
+#param_plt$Microbe <- ifelse(param_plt$ID %in% id_pseudomonas, 'Pseudomonas', param_plt$Microbe)
+# for pseudomonas otu_1 in anoxic, k is inf, mu is 22.9697
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_oligella, 'Oligella', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_sm1a02, 'SM1A02', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_uba6140, 'UBA6140', param_plt$Microbe)
+param_plt$Microbe <- ifelse(param_plt$ID %in% id_wolinella, 'Wolinella', param_plt$Microbe)
+
+param_plt$Microbe <- factor(param_plt$Microbe,
+                            levels=c('Acinetobacter','Bacillus','Caldisericum',
+                                     'Enterobacteriaceae','Oligella','SM1A02','UBA6140','Wolinella',
+                                     'Other'))
+
+g0 <- ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Microbe), alpha=1,size=0.6) +
+  ylab(TeX('\\log{(\\mu)}')) +
+  xlab(TeX('\\log{(k)}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,15) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#377eb8', '#4daf4a', '#ff7f00',
+                                 '#a65628', '#984ea3', '#252525', '#f781bf',
+                                 '#e41a1c', '#ffffcc')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=7),
+        strip.text = element_text(size = 7),
+        legend.title = element_text(color = "black", size = 9),
+        legend.text = element_text(color = "black", size = 7))
+
+g_leg <- get_legend(g0)
+
+
+g1 <- ggplot() +
+  geom_point(data=param_plt[param_plt$Microbe=='Other',], 
+             aes(x=log(k), y=log(mu)),color='#ffffcc', alpha=0.6,size=0.24) +
+  geom_hline(data=param_plt, aes(yintercept=mean_log_mu_nrt), 
+             linetype='dotdash', color='black', size=0.12) + 
+  geom_point(data=param_plt[param_plt$Microbe=='Acinetobacter',], 
+             aes(x=log(k), y=log(mu)), color='#377eb8', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='Bacillus',], 
+             aes(x=log(k), y=log(mu)), color='#4daf4a', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='Caldisericum',], 
+             aes(x=log(k), y=log(mu)), color='#ff7f00', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='Enterobacteriaceae',], 
+             aes(x=log(k), y=log(mu)), color='#a65628', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='Oligella',], 
+             aes(x=log(k), y=log(mu)), color='#984ea3', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='SM1A02',], 
+             aes(x=log(k), y=log(mu)), color='#252525', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='UBA6140',], 
+             aes(x=log(k), y=log(mu)), color='#f781bf', alpha=1,size=0.48) +
+  geom_point(data=param_plt[param_plt$Microbe=='Wolinella',], 
+             aes(x=log(k), y=log(mu)), color='#e41a1c', alpha=1,size=0.48) +
+  ylab(TeX('\\log{(\\mu)}')) +
+  xlab(TeX('\\log{(k)}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,15) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x = element_text(size = 9),
+        axis.title.y = element_text(size = 9),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=7),
+        strip.text = element_text(size = 7))
+
+plot_grid(g1, g_leg,
+          rel_widths = c(4, 1), nrow=1)
+
+```
+
+```{r explore_analysis, eval=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  file_in <- paste0('../../output/AO/param_trio_',item,'.RData')
+  load(file_in)
+  param_trio$ID <- rownames(param_trio)
+  # extract poisson distributed microbes
+  param_poisson <- param_trio[param_trio$k==Inf,]
+  print(paste0('total number of poisson distributed microbes in ',item,' : ', nrow(param_poisson)))
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  print(paste0('total number of gamma-poisson distributed microbes in ',item,' : ', nrow(param_gpm)))
+  # extract zero-inflated microbes
+  param_zeroinf <- param_trio[param_trio$pi0!=0,]
+  print(paste0('total number of zero-inflated microbes in ',item,' : ', nrow(param_zeroinf)))
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  param_plt <- rbind(param_plt, param_gpm)
+}
+rownames(param_plt) <- c(1:nrow(param_plt))
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=str_to_title(vec_process))
+
+
+# extract extreme points
+mic <- read.table('../../data/AO/OTU_table.txt')
+
+param_huge_k <- param_plt[param_plt$k>exp(20),]
+param_huge_mu <- param_plt[param_plt$mu>exp(6),]
+
+mic_huge_k <- mic[param_huge_k$ID,]
+mic_huge_mu <- mic[param_huge_mu$ID,]
+
+# annotate microbes
+anno <- read.csv('../../data/AO/OTU_Anno.csv')
+param_huge_k <- merge(param_huge_k, anno, by='ID')
+param_huge_mu <- merge(param_huge_mu, anno, by='ID')
+
+# specific microbe species
+param_plt[param_plt$ID=='OTU_4',]
+```
+
+
+
+
+
+
+
+
