@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="quarto-0.9.165">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Yushi Tang">
+  <meta name="dcterms.date" content="2022-06-12">
+  <title>The Two-Wing Pattern of Microbial Communities under Arbitrary Environmental Disturbances</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+
+  <script src="meeting_220601_files/libs/clipboard/clipboard.min.js"></script>
+  <script src="meeting_220601_files/libs/quarto-html/quarto.js"></script>
+  <script src="meeting_220601_files/libs/quarto-html/popper.min.js"></script>
+  <script src="meeting_220601_files/libs/quarto-html/tippy.umd.min.js"></script>
+  <script src="meeting_220601_files/libs/quarto-html/anchor.min.js"></script>
+  <link href="meeting_220601_files/libs/quarto-html/tippy.css" rel="stylesheet">
+  <link id="quarto-text-highlighting-styles" href="meeting_220601_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+  <script src="meeting_220601_files/libs/bootstrap/bootstrap.min.js"></script>
+  <link href="meeting_220601_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+  <link href="meeting_220601_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a href="#abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+<li><a href="#introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+<li><a href="#material-and-methods" class="nav-link" data-scroll-target="#material-and-methods">Material and Methods</a>
+<ul class="collapse">
+<li><a href="#a-natural-costal-study-area-and-sample-collection" class="nav-link" data-scroll-target="#a-natural-costal-study-area-and-sample-collection">A natural costal study area and sample collection</a></li>
+<li><a href="#an-experimental-anoxicoxic-ao-system-and-sample-collection" class="nav-link" data-scroll-target="#an-experimental-anoxicoxic-ao-system-and-sample-collection">An experimental anoxic/oxic (AO) system and sample collection</a></li>
+<li><a href="#s-rrna-gene-sequencing" class="nav-link" data-scroll-target="#s-rrna-gene-sequencing">16S rRNA gene sequencing</a></li>
+<li><a href="#sequencing-data-processing" class="nav-link" data-scroll-target="#sequencing-data-processing">Sequencing data processing</a></li>
+<li><a href="#taxanomy" class="nav-link" data-scroll-target="#taxanomy">Taxanomy</a></li>
+<li><a href="#environmental-factors" class="nav-link" data-scroll-target="#environmental-factors">Environmental factors</a></li>
+<li><a href="#zero-inflation-criteria" class="nav-link" data-scroll-target="#zero-inflation-criteria">Zero-inflation criteria</a></li>
+<li><a href="#over-dispersion-test" class="nav-link" data-scroll-target="#over-dispersion-test">Over-dispersion test</a></li>
+<li><a href="#fitting-the-gamma-poisson-model-gpm" class="nav-link" data-scroll-target="#fitting-the-gamma-poisson-model-gpm">Fitting the Gamma-Poisson model (GPM)</a></li>
+<li><a href="#dimensionality-reduction-methods" class="nav-link" data-scroll-target="#dimensionality-reduction-methods">Dimensionality reduction methods</a></li>
+<li><a href="#diversity-analysis" class="nav-link" data-scroll-target="#diversity-analysis">Diversity analysis</a></li>
+</ul></li>
+<li><a href="#results" class="nav-link" data-scroll-target="#results">Results</a>
+<ul class="collapse">
+<li><a href="#the-mean-variance-relationship-suggests-the-over-dispersion-phenomenon-of-microbial-abundance-distribution" class="nav-link" data-scroll-target="#the-mean-variance-relationship-suggests-the-over-dispersion-phenomenon-of-microbial-abundance-distribution">The mean-variance relationship suggests the over-dispersion phenomenon of microbial abundance distribution</a></li>
+<li><a href="#the-two-wing-pattern-of-microbial-communities" class="nav-link" data-scroll-target="#the-two-wing-pattern-of-microbial-communities">The <em>Two-Wing</em> pattern of microbial communities</a></li>
+<li><a href="#microbes-in-mu-wing-are-relatively-minor-but-crutial-for-characterizing-the-community-structure" class="nav-link" data-scroll-target="#microbes-in-mu-wing-are-relatively-minor-but-crutial-for-characterizing-the-community-structure">Microbes in <span class="math inline">\mu</span>-wing are relatively minor but crutial for characterizing the community structure</a></li>
+<li><a href="#microbes-in-mu-wing-dominate-canonical-correspondence-with-environmental-factors" class="nav-link" data-scroll-target="#microbes-in-mu-wing-dominate-canonical-correspondence-with-environmental-factors">Microbes in <span class="math inline">\mu</span>-wing dominate canonical correspondence with environmental factors</a></li>
+<li><a href="#validating-and-extending-existing-rules-to-categorize-microbial-taxa" class="nav-link" data-scroll-target="#validating-and-extending-existing-rules-to-categorize-microbial-taxa">Validating and extending existing rules to categorize microbial taxa</a></li>
+<li><a href="#the-enrichment-of-non-rare-taxa-in-mu-wing" class="nav-link" data-scroll-target="#the-enrichment-of-non-rare-taxa-in-mu-wing">The enrichment of non-rare taxa in <span class="math inline">\mu</span>-wing</a></li>
+<li><a href="#the-sub-structures-of-rt-and-crt" class="nav-link" data-scroll-target="#the-sub-structures-of-rt-and-crt">The sub-structures of RT and CRT</a></li>
+<li><a href="#tracking-functional-microbes-in-mu-wing-across-different-environmental-conditions" class="nav-link" data-scroll-target="#tracking-functional-microbes-in-mu-wing-across-different-environmental-conditions">Tracking functional microbes in <span class="math inline">\mu</span>-wing across different environmental conditions</a></li>
+<li><a href="#roles-of-the-microbes-in-k-wing" class="nav-link" data-scroll-target="#roles-of-the-microbes-in-k-wing">Roles of the microbes in <span class="math inline">k</span>-wing</a></li>
+</ul></li>
+<li><a href="#discussions" class="nav-link" data-scroll-target="#discussions">Discussions</a></li>
+<li><a href="#acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#data-and-code-availability" class="nav-link" data-scroll-target="#data-and-code-availability">Data and code availability</a></li>
+<li><a href="#web-resources" class="nav-link" data-scroll-target="#web-resources">Web resources</a></li>
+<li><a href="#additional-session-info" class="nav-link" data-scroll-target="#additional-session-info">Additional session info</a></li>
+<li><a href="#fin" class="nav-link" data-scroll-target="#fin">Fin</a></li>
+<li><a href="#references" class="nav-link" data-scroll-target="#references">References</a></li>
+</ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+<header id="title-block-header" class="quarto-title-block default">
+
+
+
+<div class="quarto-title"><h1 class="title display-7">The <em>Two-Wing</em> Pattern of Microbial Communities under Arbitrary Environmental Disturbances</h1></div><div class="quarto-title-meta"><div><div class="quarto-title-meta-heading">Author</div><div class="quarto-title-meta-contents"><div class="quarto-title-authors"><div><div>
+<p>Yushi Tang</p>
+</div></div></div></div></div><div><div class="quarto-title-meta-heading">Published</div><div class="quarto-title-meta-contents"><p class="date">June 12, 2022</p></div></div></div></header>
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)       <span class="co"># for generating plots</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp)     <span class="co"># for plot text latex</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)       <span class="co"># for merging plots</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)     <span class="co"># for griding plots</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grid)          <span class="co"># for griding plots</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(matrixStats)   <span class="co"># for matrix computations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+<p>Here we describe a <em>Two-Wing</em> pattern of microbial communities that we have observed in both natural environments and experimental settings.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p><em>Why is it extremely difficult to analyze the structure of microbial communities under arbitrary environmental disturbances?</em></p>
+<ul>
+<li><p><strong>A complicated mixture of multiple subgroups.</strong></p></li>
+<li><p><strong>Extremely large community size.</strong></p></li>
+<li><p><strong>A considerable amount of zero counts.</strong></p></li>
+<li><p><strong>The issue of small sample size.</strong></p></li>
+<li><p><strong>Observable environmental factors may not be sufficient enough to categorize sample sites and to characterize microbes’ living environments.</strong></p></li>
+<li><p><strong>The difficulty of detecting functional microbes in the whole community and understanding their ecological roles.</strong></p></li>
+<li><p><strong>Lacking a general probabilistic method for microbial communities in both natural environment and experimental settings.</strong></p></li>
+</ul>
+</section>
+<section id="material-and-methods" class="level2">
+<h2 class="anchored" data-anchor-id="material-and-methods">Material and Methods</h2>
+<section id="a-natural-costal-study-area-and-sample-collection" class="level3">
+<h3 class="anchored" data-anchor-id="a-natural-costal-study-area-and-sample-collection">A natural costal study area and sample collection</h3>
+<p>Ten sampling sites in Hangzhou Bay and twelve sampling sites in two nearby effluent receiving areas (ERAs) were chosen (<a href="#fig-mean_var">Figure&nbsp;1</a> A). In April 2018, a total of 66 surface sediment samples (triplicate samples in each site) were collected using grab sampler (Van Veen, Hydro-Bios, Germany), and stored at -80 °C after transportation to the laboratory. A part of sediment sample should be freeze-dried for DNA extraction. According to the manufacturer’s instructions, total DNA was extracted from 0.25g lyophilized sediments using DNeasy® PowerSoil Kit (QIAGEN, USA). The integrity, concentration, and purity of DNA were evaluated following our previous study <span class="citation" data-cites="su2020">(<a href="#ref-su2020" role="doc-biblioref">Su et al. 2020</a>)</span>.</p>
+</section>
+<section id="an-experimental-anoxicoxic-ao-system-and-sample-collection" class="level3">
+<h3 class="anchored" data-anchor-id="an-experimental-anoxicoxic-ao-system-and-sample-collection">An experimental anoxic/oxic (AO) system and sample collection</h3>
+<p>A total of 33 samples were processed by the AO bio-reactor. These samples were collected at 11 factories (triplicate samples in each site) from dyeing (5 sites), medicine (4 sites), and pesticides (2 sites) industry through four procedures in the AO system including the stages of <em>Influent</em>, <em>Anoxic</em>, <em>Oxic</em>, and <em>Effluent</em>. <code>Describe DNA extraction.</code></p>
+</section>
+<section id="s-rrna-gene-sequencing" class="level3">
+<h3 class="anchored" data-anchor-id="s-rrna-gene-sequencing">16S rRNA gene sequencing</h3>
+<p>The primer pair 515F (5’- GTG CCA GCM GCC GCG GTA A-3’) and 806R (5’- GGA CTA CHV GGG TWT CTA AT-3’) were used to amplify the V4 region of bacterial 16S rRNA gene from each purified DNA sample. The PCR amplification program and generation of amplicon sequencing libraries followed the method in our previous study <span class="citation" data-cites="dai2020">(<a href="#ref-dai2020" role="doc-biblioref">Dai et al. 2020</a>)</span>.</p>
+</section>
+<section id="sequencing-data-processing" class="level3">
+<h3 class="anchored" data-anchor-id="sequencing-data-processing">Sequencing data processing</h3>
+<p>The 16S rRNA gene amplicon sequences were processed using the pipeline of QIIME2 (v2020.11) <span class="citation" data-cites="bolyen2019">(<a href="#ref-bolyen2019" role="doc-biblioref">Bolyen et al. 2019</a>)</span>. All raw sequences were first filtered using DADA2 algorithm with default parameters to generate high-quality amplicon sequence variants (ASVs) <span class="citation" data-cites="callahan2016">(<a href="#ref-callahan2016" role="doc-biblioref">Callahan et al. 2016</a>)</span>. A total of 51,441 ASVs were taxonomically assigned against the SILVA SSU 138 database with a <span class="math inline">99\%</span> sequence identity threshold. To equalize the impact of sequence number variation across different samples, we rarefied all samples based on the lowest sequencing depth (114, 325 sequences) for further analysis.</p>
+</section>
+<section id="taxanomy" class="level3">
+<h3 class="anchored" data-anchor-id="taxanomy">Taxanomy</h3>
+<p>In total, each sample replicate contains 44,525 counts of 29,536 OTUs for AO data and 114,325 counts of 51,441 OTUs for Hangzhou data.</p>
+</section>
+<section id="environmental-factors" class="level3">
+<h3 class="anchored" data-anchor-id="environmental-factors">Environmental factors</h3>
+<ul>
+<li><p>AO data:</p>
+<ul>
+<li><span class="math inline">\text{N.NO}_2</span>, <span class="math inline">\text{N.NH}_4</span>, <span class="math inline">\text{TP}</span>, <span class="math inline">\text{COD}</span>, <span class="math inline">\text{pH}</span>, <span class="math inline">\text{DO}</span>, <span class="math inline">\text{Salinity}</span>;</li>
+</ul></li>
+<li><p>Hangzhou data:</p>
+<ul>
+<li><span class="math inline">\text{Temp.}</span>, <span class="math inline">\text{pH}</span>, <span class="math inline">\text{Salinity}</span>, <span class="math inline">\text{TN}</span>, <span class="math inline">\text{TP}</span>, <span class="math inline">\text{TOC}</span>, <span class="math inline">\text{Oil}</span>, <span class="math inline">\text{Cr}</span>, <span class="math inline">\text{As}</span>, <span class="math inline">\text{Cu}</span>, <span class="math inline">\text{Zn}</span>, <span class="math inline">\text{Cd}</span>, <span class="math inline">\text{Pb}</span>, <span class="math inline">\text{Hg}</span>, <span class="math inline">\text{MPs}</span> (for bay).</li>
+</ul></li>
+</ul>
+</section>
+<section id="zero-inflation-criteria" class="level3">
+<h3 class="anchored" data-anchor-id="zero-inflation-criteria">Zero-inflation criteria</h3>
+<p>For both AO and Hangzhou data, we have collected three replicates frome each sample sites. If over two thirds of these replicates have zero counts at either one of these sample sites, we would identify the corresponding microbial abundance as a zero-inflated record. This detection was completed by the function <code>is_zero_infla</code> in our R package <code>PMCosm</code>.</p>
+</section>
+<section id="over-dispersion-test" class="level3">
+<h3 class="anchored" data-anchor-id="over-dispersion-test">Over-dispersion test</h3>
+<p>This statistical test was implemented by the function <code>dispersiontest</code> in R package <code>AER</code> and wrapped up by the function <code>is_overdispersion</code> in our R package <code>PMCosm</code>.</p>
+</section>
+<section id="fitting-the-gamma-poisson-model-gpm" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-the-gamma-poisson-model-gpm">Fitting the Gamma-Poisson model (GPM)</h3>
+<p><span class="citation" data-cites="fisher1943">Fisher, Corbet, and Williams (<a href="#ref-fisher1943" role="doc-biblioref">1943</a>)</span> first proposed using GPM to characterize the abundance distribution of the underlying population based on the observed random samples. For microbes that do not have inflated zero counts while having significant over-dispersion pattern (<span class="math inline">p</span>-value <span class="math inline">&lt;0.05</span>), we fitted GPM using the well-established function <code>glm.nb</code> in the R package <code>MASS</code> (version 7.3-57). For microbes that have inflated zero counts and significant over-dispersion pattern, we fitted a zero-inflated Gamma-Poisson model using another classical function <code>zeroinfl</code> in the R package <code>pscl</code> (version 1.5.5). For microbes that do not have significant over-dispersion pattern, we fitted a standard Poisson model using the base R function <code>glm</code>.</p>
+</section>
+<section id="dimensionality-reduction-methods" class="level3">
+<h3 class="anchored" data-anchor-id="dimensionality-reduction-methods">Dimensionality reduction methods</h3>
+<ul>
+<li>principal component analysis (PCA)</li>
+<li>principal coordinates analysis (PCoA)</li>
+<li>canonical correspondence analysis (CCA)</li>
+</ul>
+</section>
+<section id="diversity-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="diversity-analysis">Diversity analysis</h3>
+<ul>
+<li><span class="math inline">\beta</span>-diversity analysis <span class="citation" data-cites="koleff2003">(<a href="#ref-koleff2003" role="doc-biblioref">Koleff, Gaston, and Lennon 2003</a>)</span></li>
+</ul>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="the-mean-variance-relationship-suggests-the-over-dispersion-phenomenon-of-microbial-abundance-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="the-mean-variance-relationship-suggests-the-over-dispersion-phenomenon-of-microbial-abundance-distribution">The mean-variance relationship suggests the over-dispersion phenomenon of microbial abundance distribution</h3>
+<p>Starting from the individual level, different microbes’ abundance distributions under different environmental conditions share some common probabilistic properties based on the counting data from 16S rRNA gene sequencing results (<a href="#fig-mean_var">Figure&nbsp;1</a> B). One of the most important properties is over-dispersion. For microbes in both natural (<a href="#fig-mean_var">Figure&nbsp;1</a> C) and experimental (<a href="#fig-mean_var">Figure&nbsp;1</a> D) environments, the variance (<span class="math inline">\boldsymbol{V}</span>) and mean (<span class="math inline">\boldsymbol{E}</span>) of microbial abundance are generally following a quadratic relationship as <span id="eq-mean_variance"><span class="math display">V_i=E_i+\frac{1}{k}E_i^2+\epsilon_i \qquad(1)</span></span> where <span class="math inline">i</span> denotes the index of microbe and <span class="math inline">\epsilon_i</span> denotes the random Gaussian noise such that <span class="math inline">\epsilon_i \sim \mathcal{N}(0,\sigma_e^2)</span>. Notice that <span class="math inline">V_i</span> is greater than <span class="math inline">E_i</span>, which is known as the dispersion pattern. Beyond that, <a href="#eq-mean_variance">Equation&nbsp;1</a> suggests that <span class="math inline">V_i</span> is expected to be much greater than <span class="math inline">E_i</span> when <span class="math inline">E_i</span> is large itself and <span class="math inline">k</span> is at a considerable scale. This phenomenon is known as the over-dispersion pattern. One may ask why we are intrigured by <a href="#eq-mean_variance">Equation&nbsp;1</a>. A quick but non-trivial answer is that the variance <span class="math inline">\boldsymbol{V}</span> in <a href="#eq-mean_variance">Equation&nbsp;1</a> has been serving as the most crucial brick of quantitative analysis in the field of ecology. Variance analysis lays the foundation of (dis)similarity, correlation, and even diversity evaluations. Following <a href="#eq-mean_variance">Equation&nbsp;1</a>, to appropriately characterize <span class="math inline">\boldsymbol{V}</span> for microbial abundance data, we need a model that can appropriately measure both <span class="math inline">\boldsymbol{E}</span> and <span class="math inline">k</span>. We address the estimate of <span class="math inline">\boldsymbol{E}</span> as <span class="math inline">\boldsymbol{\mu}</span>, which quantifies the microbial abundance at the population level. The other parameter <span class="math inline">k</span> quantifies the scale of the over-dispersion, i.e., how huge the gap is between <span class="math inline">\boldsymbol{V}</span> and <span class="math inline">\boldsymbol{E}</span>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load our package PMCosm</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">list.files</span>(<span class="at">pattern=</span><span class="st">"[.]R$"</span>, <span class="at">path=</span><span class="st">"../R/PMCosm"</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>), source)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># for AO data</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>mic <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">'../data/AO/OTU_table.txt'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>id_dye <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'LS'</span>,<span class="st">'SF'</span>,<span class="st">'CZ'</span>,<span class="st">'BA'</span>,<span class="st">'YF'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>id_med <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'GB'</span>,<span class="st">'YTSW'</span>,<span class="st">'XHC'</span>,<span class="st">'ZC'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>id_pes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'YT'</span>,<span class="st">'YN'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>lis_ind <span class="ot">&lt;-</span> <span class="fu">list</span>(id_dye, id_med, id_pes)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(lis_ind) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Dye'</span>,<span class="st">'Medicine'</span>,<span class="st">'Pesticide'</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>id_inf <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Inf1'</span>,<span class="st">'Inf2'</span>,<span class="st">'Inf3'</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>id_axi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Ax1'</span>,<span class="st">'Ax2'</span>,<span class="st">'Ax3'</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>id_oxi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Ox1'</span>,<span class="st">'Ox2'</span>,<span class="st">'Ox3'</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>id_eff <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Eff1'</span>,<span class="st">'Eff2'</span>,<span class="st">'Eff3'</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>lis_pro <span class="ot">&lt;-</span> <span class="fu">list</span>(id_inf, id_axi, id_oxi, id_eff)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(lis_pro) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Influent'</span>,<span class="st">'Anoxic'</span>,<span class="st">'Oxic'</span>,<span class="st">'Effluent'</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(region <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># extract column id</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  id_col <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lis_ind)){</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    id_ind <span class="ot">&lt;-</span> lis_ind[[i]]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    id_pro <span class="ot">&lt;-</span> lis_pro[[region]]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    id_col <span class="ot">&lt;-</span> <span class="fu">c</span>(id_col, <span class="fu">paste0</span>(<span class="fu">rep</span>(id_ind, <span class="at">each=</span><span class="fu">length</span>(id_pro)),<span class="st">'_'</span>,<span class="fu">rep</span>(id_pro, <span class="fu">length</span>(id_ind))))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># extract abundance data</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  mic_sub <span class="ot">&lt;-</span> mic[,id_col]</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  mic_sub <span class="ot">&lt;-</span> mic_sub[<span class="fu">rowMeans</span>(mic_sub)<span class="sc">&gt;</span><span class="dv">0</span>,]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># test zero-inflation</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  id_zf <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_sub, <span class="dv">1</span>, is_zero_infla)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># test over-dispersion</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  id_od <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_sub, <span class="dv">1</span>, is_overdispersion)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># report over-dispersion proportions among non zero-inflated</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"the proportion of over-dispersion among non zero-inflated microbes in "</span>, <span class="fu">names</span>(lis_pro)[region],<span class="st">" is: "</span>,<span class="fu">sum</span>((<span class="sc">!</span>id_zf) <span class="sc">&amp;</span> id_od)<span class="sc">/</span><span class="fu">sum</span>(<span class="sc">!</span>id_zf)))</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co"># for HZ data</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>mic <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">file=</span><span class="st">'../data/2018/resample_feature-table.txt'</span>,</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>                  <span class="at">header=</span><span class="cn">TRUE</span>,<span class="at">row.names=</span><span class="dv">1</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># construct column id</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>bay_loci <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'HB1.1'</span>,<span class="st">'HB1.2'</span>,<span class="st">'HB1.3'</span>,<span class="st">'HB2.1'</span>,<span class="st">'HB2.2'</span>,<span class="st">'HB2.3'</span>,</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>              <span class="st">'HB3.1'</span>,<span class="st">'HB3.2'</span>,<span class="st">'HB3.3'</span>,<span class="st">'HB4.1'</span>,<span class="st">'HB4.2'</span>,<span class="st">'HB4.3'</span>,</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>              <span class="st">'HB5.1'</span>,<span class="st">'HB5.2'</span>,<span class="st">'HB5.3'</span>,<span class="st">'HB6.1'</span>,<span class="st">'HB6.2'</span>,<span class="st">'HB6.3'</span>,</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>              <span class="st">'HB7.1'</span>,<span class="st">'HB7.2'</span>,<span class="st">'HB7.3'</span>,<span class="st">'HB8.1'</span>,<span class="st">'HB8.2'</span>,<span class="st">'HB8.3'</span>,</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>              <span class="st">'HB9.1'</span>,<span class="st">'HB9.2'</span>,<span class="st">'HB9.3'</span>,<span class="st">'HB10.1'</span>,<span class="st">'HB10.2'</span>,<span class="st">'HB10.3'</span>)</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>era_sy_loci <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'SY1.1'</span>,<span class="st">'SY1.2'</span>,<span class="st">'SY1.3'</span>,<span class="st">'SY2.1'</span>,<span class="st">'SY2.2'</span>,<span class="st">'SY2.3'</span>,</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'SY3.1'</span>,<span class="st">'SY3.2'</span>,<span class="st">'SY3.3'</span>,<span class="st">'SY4.1'</span>,<span class="st">'SY4.2'</span>,<span class="st">'SY4.3'</span>,</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'SY5.1'</span>,<span class="st">'SY5.2'</span>,<span class="st">'SY5.3'</span>,<span class="st">'SY6.1'</span>,<span class="st">'SY6.2'</span>,<span class="st">'SY6.3'</span>)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>era_jx_loci <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'JX1.1'</span>,<span class="st">'JX1.2'</span>,<span class="st">'JX1.3'</span>,<span class="st">'JX2.1'</span>,<span class="st">'JX2.2'</span>,<span class="st">'JX2.3'</span>,</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'JX3.1'</span>,<span class="st">'JX3.2'</span>,<span class="st">'JX3.3'</span>,<span class="st">'JX4.1'</span>,<span class="st">'JX4.2'</span>,<span class="st">'JX4.3'</span>,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'JX5.1'</span>,<span class="st">'JX5.2'</span>,<span class="st">'JX5.3'</span>,<span class="st">'JX6.1'</span>,<span class="st">'JX6.2'</span>,<span class="st">'JX6.3'</span>)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>mic_bay <span class="ot">&lt;-</span> mic[,bay_loci]</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>mic_bay <span class="ot">&lt;-</span> mic_bay[<span class="fu">rowMeans</span>(mic_bay)<span class="sc">&gt;</span><span class="dv">0</span>,]</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>mic_era <span class="ot">&lt;-</span> mic[,<span class="fu">c</span>(era_sy_loci, era_jx_loci)]</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>mic_era <span class="ot">&lt;-</span> mic_era[<span class="fu">rowMeans</span>(mic_era)<span class="sc">&gt;</span><span class="dv">0</span>,]</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="co"># test zero-inflation</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>id_zf_bay <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_bay, <span class="dv">1</span>, is_zero_infla)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>id_zf_era <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_era, <span class="dv">1</span>, is_zero_infla)</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># test over-dispersion</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>id_od_bay <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_bay, <span class="dv">1</span>, is_overdispersion)</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>id_od_era <span class="ot">&lt;-</span> <span class="fu">apply</span>(mic_era, <span class="dv">1</span>, is_overdispersion)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"the proportion of over-dispersion among non zero-inflated microbes in Bay is: "</span>, <span class="fu">sum</span>((<span class="sc">!</span>id_zf_bay) <span class="sc">&amp;</span> id_od_bay)<span class="sc">/</span><span class="fu">sum</span>(<span class="sc">!</span>id_zf_bay)))</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"the proportion of over-dispersion among non zero-inflated microbes in ERAs is: "</span>, <span class="fu">sum</span>((<span class="sc">!</span>id_zf_era) <span class="sc">&amp;</span> id_od_era)<span class="sc">/</span><span class="fu">sum</span>(<span class="sc">!</span>id_zf_era)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>To confirm the existence of over-dispersion accurately, we conducted over-dispersion test for each microbe in both AO and Hangzhou data. Among microbes that are not zero-inflated in AO data, the proportions of over-dispersion (<span class="math inline">p</span>-value <span class="math inline">&lt; 0.05</span>) are <span class="math inline">83.33\%</span> in <em>Influent</em> procedure, <span class="math inline">96.83\%</span> in <em>Anoxic</em> procedure, <span class="math inline">98.70\%</span> in <em>Oxic</em> procedure, and <span class="math inline">88.71\%</span> in <em>Effluent</em> procedure. For Hangzhou data, the proportions are <span class="math inline">82.72\%</span> in Bay and <span class="math inline">85.04\%</span> in ERAs.</p>
+<div class="cell">
+
+</div>
+<div id="fig-mean_var" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 1: <strong>The over-dispersion phenomenon of microbial abundance across sample sites in natural and experimental environments. (A)</strong> The geographical location of ten sample sites in Hangzhou Bay and two nearby ERAs. We refer to sites in Hangzhou Bay as HB1-10, sites in Jiaxing ERA as JX1-6, and sites in Shangyu ERA as SY1-6. We collected three replicated samples from each site. <strong>(B)</strong> The abundance distribution of three sulfate-reducing bacteria. Each type of bacteria has a site-specific abundance distribution while these distributions share a similar shape of their density curves. <strong>(C)</strong> The mean-variance relationship regarding the microbes’ abundance is following a quadratic function in both Hangzhou Bay and ERAs. <strong>(D)</strong> The mean-variance relationship regarding the microbes’ abundance is following a quadratic function in the AO system.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/ao_var_mean.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="the-two-wing-pattern-of-microbial-communities" class="level3">
+<h3 class="anchored" data-anchor-id="the-two-wing-pattern-of-microbial-communities">The <em>Two-Wing</em> pattern of microbial communities</h3>
+<p>To fully retain the over-dispersion characteristic, a good candidate for quantifying the counting data is the Gamma-Poisson model (GPM). For each specific type of microbes, saying microbe <span class="math inline">i</span>, define <span class="math inline">x_{ij}</span> as the minimum number or abundance of microbes that ensure the survival of microbe <span class="math inline">i</span> in sample site <span class="math inline">j</span>. In 16S rRNA gene sequencing data, <span class="math inline">x_{ij}</span> represents the abundance of microbe <span class="math inline">i</span> under condition <span class="math inline">j</span>. GPM quantifies <span class="math inline">x_{ij}</span> with a two-layer model as <span id="eq-gpm"><span class="math display">x_{ij}|\lambda_{ij}\sim \text{Poisson}(\lambda_{ij}),\,\,\,\,\,\,\lambda_{ij}\sim \text{Gamma}(\alpha,\beta). \qquad(2)</span></span> Then one can calculate the mean and variance as <span class="math display">\mathbb{E}[x_{ij}]=\alpha \beta,\,\,\,\,\,\,\mathbb{V}(x_{ij})=\alpha \beta + \alpha^2\beta,</span> which satisfy the over-dispersion pattern in <a href="#eq-mean_variance">Equation&nbsp;1</a>. An equivalent way to express <a href="#eq-gpm">Equation&nbsp;2</a> is using the negative binomial distribution whereas <span id="eq-nb"><span class="math display">x_{ij}|r_{ij},\varrho_{ij}\sim \text{NBin}(r_{ij},\varrho_{ij})\,\,\,\,\,\,\text{s.t.}\,\,\,\,\,\,\mathbb{P}(x_{ij}=x|r_{ij},\varrho_{ij})=\genfrac(){0pt}{2}{r_{ij}+x-1}{x}\varrho_{ij}^{r_{ij}}(1-\varrho_{ij})^{x}. \qquad(3)</span></span> Now the mean and variance are calculated as <span class="math display">\mathbb{E}[x_{ij}|r_{ij},\varrho_{ij}]=\frac{r_{ij}(1-\varrho_{ij})}{\varrho_{ij}},\,\,\,\,\,\,\mathbb{V}(x_{ij}|r_{ij},\varrho_{ij})=\frac{r_{ij}(1-\varrho_{ij})}{\varrho_{ij}^2},</span> which also satisfy the over-dispersion pattern in <a href="#eq-mean_variance">Equation&nbsp;1</a>. The connection between <a href="#eq-gpm">Equation&nbsp;2</a> and <a href="#eq-nb">Equation&nbsp;3</a> is <span class="math display">r_{ij}=\beta,\,\,\,\,\,\,\varrho_{ij}=\frac{1}{\alpha+1}.</span> Comparing <a href="#eq-mean_variance">Equation&nbsp;1</a> and <a href="#eq-gpm">Equation&nbsp;2</a>, we notice that <span class="math display">\mu=\alpha \beta,\,\,\,\,\,\,k=\frac{1}{\beta}.</span> Accurate estimations of the parameter pair <span class="math inline">\mu</span> and <span class="math inline">k</span> can appropriately quantify the over-dispersion pattern.</p>
+<p>Specifically for the counting results extracted from 16S rRNA gene sequencing data, one may frequently encounter an inflated proportion of zeros. For microbes with this characteristic, we modify GPM in <a href="#eq-gpm">Equation&nbsp;2</a> as a zero-inflated Gamma-Poisson model (zGPM). We use an additional parameter <span class="math inline">\pi_0</span> to quantify the effect of unexpected zeros on estimating <span class="math inline">\mu</span> and <span class="math inline">k</span>.</p>
+<p>Altogether, we have a parameter trio <span class="math inline">(\mu,k,\pi_0)</span> to model the microbial abundance data. We calculated maximum-likelihood estimates (MLE) of the parameter trio for microbes in both the AO system and the Hangzhou Bay with two nearby effluent-receiving areas (ERAs). We discovered a <em>Two-Wing</em> pattern of microbial communities in both experimental and natural environments (<a href="#fig-two_wing">Figure&nbsp;2</a>).</p>
+<div id="fig-two_wing" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 2: <strong>The <em>Two-Wing</em> pattern of microbial communities in (A)</strong> AO data and <strong>(B)</strong> Hangzhou Bay and two nearby ERAs. The gray dotdashed line denotes <span class="math inline">\log(k)=7</span>. We address the left side of the gray dotdashed line as <span class="math inline">\mu</span>-wing since it contains the highest estimate(s) of <span class="math inline">\mu</span>. We address the right side of the gray dotdashed line as <span class="math inline">k</span>-wing since it covers the highest estimate(s) of <span class="math inline">k</span>.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/mu_k_ao.Rmd</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/mu_k_hz.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="microbes-in-mu-wing-are-relatively-minor-but-crutial-for-characterizing-the-community-structure" class="level3">
+<h3 class="anchored" data-anchor-id="microbes-in-mu-wing-are-relatively-minor-but-crutial-for-characterizing-the-community-structure">Microbes in <span class="math inline">\mu</span>-wing are relatively minor but crutial for characterizing the community structure</h3>
+<p>Around <span class="math inline">20\%</span> species are enriched in <span class="math inline">\mu</span>-wing in AO data across all four stages (<span class="math inline">21.25\%</span> in <em>Influent</em>, <span class="math inline">21.65\%</span> in <em>Anoxic</em>, <span class="math inline">20.46\%</span> in <em>Oxic</em>, <span class="math inline">23.40\%</span> in <em>Effluent</em>). In natural environments, <span class="math inline">16.59\%</span> species in the Hangzhou Bay are enriched in <span class="math inline">\mu</span>-wing and <span class="math inline">14.93\%</span> species in nearby ERAs are enriched in <span class="math inline">\mu</span>-wing. Microbes in <span class="math inline">\mu</span>-wing has limited diversity compared to those in <span class="math inline">k</span>-wing.</p>
+<p>However, microbes in <span class="math inline">\mu</span>-wing are sufficient enough to resemble the community structure of the whole cohort based on PCA and PCoA results (<a href="#fig-pca_pcoa">Figure&nbsp;3</a>). After simple rotations if necessary, PCA and PCoA results of <span class="math inline">\mu</span>-wing are almost identical to PCA and PCoA results of the whole community. On the other hand, <span class="math inline">k</span>-wing displays completely different PCA and PCoA results. No matter what rotations have been conducted, microbes in <span class="math inline">k</span>-wing can not present the same or even close PCA and PCoA results of the whole community.</p>
+<div id="fig-pca_pcoa" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig3.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 3: <strong>PCA and PCoA results of all microbes, microbes in</strong> <span class="math inline">\mu</span>-wing, and microbes in <span class="math inline">k</span>-wing. (A) PCA results of AO data. <strong>(B)</strong> PCA results of Hangzhou Bay and two nearby ERAs. <strong>(C)</strong> PCoA results of AO data. <strong>(D)</strong> PCoA results of Hangzhou Bay and two nearby ERAs. The abundance structure of microbes in <span class="math inline">\mu</span>-wing resemble the structure of the whole microbial cohort. Microbes in <span class="math inline">k</span>-wing display completely different structural pattern compared to the whole microbial cohort.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/pca_ao.Rmd</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/pca_hz.Rmd</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/pcoa_ao.Rmd</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/pcoa_hz.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="microbes-in-mu-wing-dominate-canonical-correspondence-with-environmental-factors" class="level3">
+<h3 class="anchored" data-anchor-id="microbes-in-mu-wing-dominate-canonical-correspondence-with-environmental-factors">Microbes in <span class="math inline">\mu</span>-wing dominate canonical correspondence with environmental factors</h3>
+<p>In <a href="#fig-cca_ao">Figure&nbsp;4</a>, we conducted canonical correspondence analysis (CCA) for all microbes, microbes in <span class="math inline">\mu</span>-wing, and microbes in <span class="math inline">k</span>-wing for both AO data and Hangzhou Bay with nearby ERAs, as well as corresponding environmental factors. Similar to PCA and PCoA results, microbes in <span class="math inline">\mu</span>-wing are sufficient enough to resemble the canonical correspondence of the whole community with environmental factors. Microbes in <span class="math inline">k</span>-wing display completely different CCA results compared to the whole community.</p>
+<div id="fig-cca_ao" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig4.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 4: <strong>CCA results of all microbes, microbes in</strong> <span class="math inline">\mu</span>-wing, and microbes in <span class="math inline">k</span>-wing in AO data.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/cca_ao_ori.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="validating-and-extending-existing-rules-to-categorize-microbial-taxa" class="level3">
+<h3 class="anchored" data-anchor-id="validating-and-extending-existing-rules-to-categorize-microbial-taxa">Validating and extending existing rules to categorize microbial taxa</h3>
+<p>The <em>Two-Wing</em> pattern is a generalization of existing rules to categorize microbial taxa (<a href="#fig-wing_category">Figure&nbsp;5</a>). Recall that <span class="citation" data-cites="dai2016">(<a href="#ref-dai2016" role="doc-biblioref">Dai et al. 2016</a>)</span> has defined six microbial taxa categories as: (i) rare taxa (RT), OTUs with abundance <span class="math inline">\leq 0.1\%</span> in all samples; (ii) abundant taxa (AT), OTUs with abundance <span class="math inline">\geq 1\%</span> in all samples; (iii) moderate taxa (MT), OTUs with abundance between <span class="math inline">0.1</span> and <span class="math inline">1\%</span> in all samples; (iv) conditionally rare taxa (CRT), OTUs with abundance below <span class="math inline">1\%</span> in all samples and <span class="math inline">\leq 0.1\%</span> in some samples; (v) conditionally abundant taxa (CAT), OTUs with abundance greater than <span class="math inline">0.1\%</span> in all samples and <span class="math inline">\geq 1\%</span> in some samples but never rare (never <span class="math inline">\leq 0.1\%</span>); and (vi) conditionally rare or abundant taxa (CRAT), OTUs with abundance varying from rare (<span class="math inline">\leq 0.1\%</span>) to abundant (<span class="math inline">\geq 1\%</span>). Here we follow many other researchers’ suggestion <span class="citation" data-cites="chen2017 mo2018 xue2018 liu2019">(<a href="#ref-chen2017" role="doc-biblioref">Chen et al. 2017</a>; <a href="#ref-mo2018" role="doc-biblioref">Mo et al. 2018</a>; <a href="#ref-xue2018" role="doc-biblioref">Xue et al. 2018</a>; <a href="#ref-liu2019" role="doc-biblioref">Liu, Xue, and Yang 2019</a>)</span> to use a threshold of <span class="math inline">0.01\%</span> instead of <span class="math inline">0.1\%</span> do define RT. We especially emphasize two important discoveries in the following subsections.</p>
+<div id="fig-wing_category" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig5.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 5: <strong>The categories of microbes in</strong> <span class="math inline">\mu</span>-wing and <span class="math inline">k</span>-wing based on (A) the AO data and <strong>(B)</strong> the abundance data in Hangzhou Bay and nearby ERAs.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/mu_k_ao_category.Rmd</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/mu_k_hz_category.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="the-enrichment-of-non-rare-taxa-in-mu-wing" class="level3">
+<h3 class="anchored" data-anchor-id="the-enrichment-of-non-rare-taxa-in-mu-wing">The enrichment of non-rare taxa in <span class="math inline">\mu</span>-wing</h3>
+<p>The four non-rare taxa categories–MT, AT, CAT, and CRAT–are all enriched in <span class="math inline">\mu</span>-wing. These microbes have very small <span class="math inline">k</span> and thereby a very obvious over-dispersion characteristic.</p>
+<div id="fig-cca_hz_all_mu_nrt" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/cca_hz_all_mu_nrt_log.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6: <strong>The CCA results of microbes in Hangzhou Bay and nearby ERAs.</strong> The left column is the CCA result for the whole community. The middle column is the result for microbes in <span class="math inline">\mu</span>-wing. The right column is the result for non-rare taxa.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/cca_hz_all_nrt_log.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="the-sub-structures-of-rt-and-crt" class="level3">
+<h3 class="anchored" data-anchor-id="the-sub-structures-of-rt-and-crt">The sub-structures of RT and CRT</h3>
+<p>RT and CRT are the only two categories that exist in both <span class="math inline">\mu</span>-wing and <span class="math inline">k</span>-wing. This suggests that even among RT or among CRT, microbes may play different ecological roles. <span class="citation" data-cites="koleff2003">Koleff, Gaston, and Lennon (<a href="#ref-koleff2003" role="doc-biblioref">2003</a>)</span> has a good summary for interpreting <span class="math inline">\beta</span>-diversity analysis results in <a href="#fig-rt_crt_mu_k">Figure&nbsp;7</a> G-K.</p>
+<div id="fig-rt_crt_mu_k" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/rt_crt_mu_k.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7: <strong>RT and CRT in</strong> <span class="math inline">\mu</span>-wing and <span class="math inline">k</span>-wing present different CCA and diversity evaluation results.</figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/diversity_ao_rt_crt_mu_k.Rmd</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/diversity_hz_rt_crt_mu_k.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="tracking-functional-microbes-in-mu-wing-across-different-environmental-conditions" class="level3">
+<h3 class="anchored" data-anchor-id="tracking-functional-microbes-in-mu-wing-across-different-environmental-conditions">Tracking functional microbes in <span class="math inline">\mu</span>-wing across different environmental conditions</h3>
+<p><em>Why do we consider microbes in</em> <span class="math inline">\mu</span>-wing as potential functional candidates? Let us revisit the over-dispersion phenomenon that is quantified by <a href="#eq-mean_variance">Equation&nbsp;1</a> as <span class="math display">V_i=E_i+\frac{1}{k}E_i^2+\epsilon_i.</span> In <span class="math inline">\mu</span>-wing, the estimate of the scale parameter <span class="math inline">k</span> is relatively small. As a result, <span class="math inline">V_i</span> is considerably greater than <span class="math inline">E_i</span>, which suggests a pattern of sever over-dispersion. For non-rare microbes in <span class="math inline">\mu</span>-wing whose <span class="math inline">E_i</span> is large, their <span class="math inline">V_i</span> is at a very high level such that they can capture the heterogeneity of sample sites in the study area.</p>
+<div id="fig-mu_wing_mic" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../vignettes/figures/fig6.png" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 8: <strong>The locations of key microbes in the <em>Two-Wing</em> pattern through four stages of the AO system.</strong></figcaption><p></p>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run code</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ../vignettes/figures/mu_k_ao_reducemic.Rmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><em>Acinetobacter</em> (不动杆菌属) Usually a pathogen. Innately resistant to many antibiotics. Can spread rapidly among patients in ICU. Widely distributed in natural soil and water. Plays important role in the aerobic mineralization of organic matter <span class="citation" data-cites="isolatio">(<a href="#ref-isolatio" role="doc-biblioref">Baumann 1968</a>)</span>.</p>
+<p><em>Bacillus</em> (芽孢杆菌属) Frequently used in industries due to its ability of producing useful enzymes. Species in this genus can be either obligate aerobes or facultative anaerobes.</p>
+<p><em>Caldisericum</em> (Caldisericum 属) Sulfur-reducing microbes. Capable of reducing sulfur compounds but not sulfate <span class="citation" data-cites="mori">(<a href="#ref-mori" role="doc-biblioref">Mori et al., n.d.</a>)</span>. Has been reported in both natural and engineered habitats <span class="citation" data-cites="kim2014">(<a href="#ref-kim2014" role="doc-biblioref">Kim et al. 2014</a>)</span>.</p>
+<p><em>Enterobacteriaceae</em> (肠杆菌科) Facultative anaerobes. Mostly ferment sugars. Some reduce nitrate to nitrite.</p>
+<p><em>Oligella</em> (寡养杆菌属) Mostly aerobic. Can cause infections. Most clinical isolates are from the urine.</p>
+<p><em>SM1A02</em> (SM1A02 属) Has been reported to be related to ammonia transformation in the activated sludge process <span class="citation" data-cites="tian2017">(<a href="#ref-tian2017" role="doc-biblioref">Tian et al. 2017</a>)</span>.</p>
+<p><em>Wolinella</em> (沃林氏菌属) Most of them grow anaerobically by respiratory nitrite ammonification.</p>
+</section>
+<section id="roles-of-the-microbes-in-k-wing" class="level3">
+<h3 class="anchored" data-anchor-id="roles-of-the-microbes-in-k-wing">Roles of the microbes in <span class="math inline">k</span>-wing</h3>
+<p>For microbes in <span class="math inline">k</span>-wing, the scale parameter <span class="math inline">k</span> is estimated to be considerably huge. Recall <a href="#eq-mean_variance">Equation&nbsp;1</a> whereas <span class="math display">V_i=E_i+\frac{1}{k}E_i^2+\epsilon_i,</span> <span class="math inline">V_i</span> would be very close to <span class="math inline">E_i</span> for a huge scale parameter <span class="math inline">k</span>, especially when <span class="math inline">E_i</span> is small. This approximate equality between <span class="math inline">V_i</span> and <span class="math inline">E_i</span> sets the microbial abundance distribution to be approaching to a Poisson distribution. One can interpret this phenomenon when assuming the microbes in <span class="math inline">k</span>-wing have almost equal preference of the living environments across all sample sites. Each microbe has a chance to survive in an environmental unit which can be modeled by a Bernoulli experiment. If considering the sample site as a union of these environmental units, the sum of independent Bernoulli trials would yield a Binomial distribution. Then a later Poisson approximation leads to the approximate equality between <span class="math inline">V_i</span> and <span class="math inline">E_i</span>, thereby validating what we have observed regarding the microbial abundance in <span class="math inline">k</span>-wing.</p>
+</section>
+</section>
+<section id="discussions" class="level2">
+<h2 class="anchored" data-anchor-id="discussions">Discussions</h2>
+<ul>
+<li><p>We discovered a <em>Two-Wing</em> pattern of microbial communities in both natural environments and experimental settings.</p></li>
+<li><p>Our findings assist in understanding the admixture structure behind microbial communities.</p></li>
+<li><p>The <em>Two-Wing</em> pattern provides a path to better generalize and further extend current taxa categorizing rules. It solves the debating regarding the threshold of defining rare taxa.</p></li>
+<li><p>We utilized the <em>Two-Wing</em> pattern to elaborate the limitations of using popular dimensionality reduction methods to analyze the architecture of microbial communities and the abundance heterogeneity explained by environmental factors.</p></li>
+<li><p>Recognizing the existence of the <em>Two-Wing</em> pattern leads to a potential strategy to detect functional microbes under arbitrary environmental disturbances.</p></li>
+<li><p>The well-separated clusters in the <em>Two-Wing</em> pattern motivate the development of a probabilistic model suitable for microbial data with large community size and small/large number of observations.</p></li>
+<li><p>The <em>Two-Wing</em> pattern has shown the power of <span class="citation" data-cites="fisher1943">Fisher, Corbet, and Williams (<a href="#ref-fisher1943" role="doc-biblioref">1943</a>)</span>’s well-established model in analyzing microbial genomic data.</p></li>
+<li><p>…</p></li>
+</ul>
+</section>
+<section id="acknowledgements" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
+<p>This project is supported by <code>funding title</code>. I would like to express my sincere appreciations for our colleagues’ contributions including but not limited to</p>
+<ul>
+<li>Microbial and environmental data in Hangzhou Bay and nearby ERAs: Zhiguo Su, Yufan Zheng, …</li>
+<li>Microbial and environmental data in the AO system: Weidong Chen, …</li>
+<li>Drafting details about sample collection and the sequencing procedure: Zhiguo Su, …</li>
+</ul>
+</section>
+<section id="data-and-code-availability" class="level2">
+<h2 class="anchored" data-anchor-id="data-and-code-availability">Data and code availability</h2>
+<p>All our raw sequencing data are available in NCBI database under the accession number <code>#&amp;%@##</code>. Analysis scripts for this study are available on GitHub at <a href="https://github.com/YushiFT/two-wing-mic" class="uri">https://github.com/YushiFT/two-wing-mic</a>.</p>
+</section>
+<section id="web-resources" class="level2">
+<h2 class="anchored" data-anchor-id="web-resources">Web resources</h2>
+<p>…</p>
+</section>
+<section id="additional-session-info" class="level2">
+<h2 class="anchored" data-anchor-id="additional-session-info">Additional session info</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-stdout">
+<pre><code>R version 4.2.0 (2022-04-22)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Catalina 10.15.3
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+[1] matrixStats_0.62.0 gridExtra_2.3      cowplot_1.1.1      latex2exp_0.9.4   
+[5] ggplot2_3.3.6     
+
+loaded via a namespace (and not attached):
+ [1] pillar_1.7.0     compiler_4.2.0   tools_4.2.0      digest_0.6.29   
+ [5] jsonlite_1.8.0   evaluate_0.15    lifecycle_1.0.1  tibble_3.1.7    
+ [9] gtable_0.3.0     pkgconfig_2.0.3  rlang_1.0.2      cli_3.3.0       
+[13] rstudioapi_0.13  yaml_2.3.5       xfun_0.31        fastmap_1.1.0   
+[17] withr_2.5.0      stringr_1.4.0    dplyr_1.0.9      knitr_1.39      
+[21] generics_0.1.2   vctrs_0.4.1      tidyselect_1.1.2 glue_1.6.2      
+[25] R6_2.5.1         fansi_1.0.3      rmarkdown_2.14   purrr_0.3.4     
+[29] magrittr_2.0.3   scales_1.2.0     ellipsis_0.3.2   htmltools_0.5.2 
+[33] colorspace_2.0-3 utf8_1.2.2       stringi_1.7.6    munsell_0.5.0   
+[37] crayon_1.5.1    </code></pre>
+</div>
+</div>
+</section>
+<section id="fin" class="level2">
+<h2 class="anchored" data-anchor-id="fin">Fin</h2>
+<p><strong>Thanks for listening and reading!</strong></p>
+</section>
+<section id="references" class="level2">
+
+
+
+</section>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-isolatio" class="csl-entry" role="doc-biblioentry">
+Baumann, Paul. 1968. <span>“Isolation of Acinetobacter from Soil and Water | Journal of Bacteriology.”</span> <em>Journal of Bacteriology</em>. Am Soc Microbiol. <a href="https://journals.asm.org/doi/abs/10.1128/jb.96.1.39-42.1968">https://journals.asm.org/doi/abs/10.1128/jb.96.1.39-42.1968</a>.
+</div>
+<div id="ref-bolyen2019" class="csl-entry" role="doc-biblioentry">
+Bolyen, Evan, Jai Ram Rideout, Matthew R. Dillon, Nicholas A. Bokulich, Christian C. Abnet, Gabriel A. Al-Ghalith, Harriet Alexander, et al. 2019. <span>“Reproducible, Interactive, Scalable and Extensible Microbiome Data Science Using QIIME 2.”</span> <em>Nature Biotechnology</em> 37 (8): 852–57. <a href="https://doi.org/10.1038/s41587-019-0209-9">https://doi.org/10.1038/s41587-019-0209-9</a>.
+</div>
+<div id="ref-callahan2016" class="csl-entry" role="doc-biblioentry">
+Callahan, Benjamin J., Paul J. McMurdie, Michael J. Rosen, Andrew W. Han, Amy Jo A. Johnson, and Susan P. Holmes. 2016. <span>“Dada2: High-Resolution Sample Inference from Illumina Amplicon Data.”</span> <em>Nature Methods</em> 13 (7): 581–83. <a href="https://doi.org/10.1038/nmeth.3869">https://doi.org/10.1038/nmeth.3869</a>.
+</div>
+<div id="ref-chen2017" class="csl-entry" role="doc-biblioentry">
+Chen, Weidong, Yongbo Pan, Lingyu Yu, Jun Yang, and Wenjing Zhang. 2017. <span>“Patterns and Processes in Marine Microeukaryotic Community Biogeography from Xiamen Coastal Waters and Intertidal Sediments, Southeast China.”</span> <em>Frontiers in Microbiology</em> 8 (October). <a href="https://doi.org/10.3389/fmicb.2017.01912">https://doi.org/10.3389/fmicb.2017.01912</a>.
+</div>
+<div id="ref-dai2016" class="csl-entry" role="doc-biblioentry">
+Dai, Tianjiao, Yan Zhang, Yushi Tang, Yaohui Bai, Yile Tao, Bei Huang, and Donghui Wen. 2016. <span>“Identifying the Key Taxonomic Categories That Characterize Microbial Community Diversity Using Full-Scale Classification: A Case Study of Microbial Communities in the Sediments of Hangzhou Bay.”</span> Edited by Gary King. <em>FEMS Microbiology Ecology</em> 92 (10): fiw150. <a href="https://doi.org/10.1093/femsec/fiw150">https://doi.org/10.1093/femsec/fiw150</a>.
+</div>
+<div id="ref-dai2020" class="csl-entry" role="doc-biblioentry">
+Dai, Tianjiao, Yanan Zhao, Daliang Ning, Bei Huang, Qinglin Mu, Yunfeng Yang, and Donghui Wen. 2020. <span>“Dynamics of Coastal Bacterial Community Average Ribosomal RNA Operon Copy Number Reflect Its Response and Sensitivity to Ammonium and Phosphate.”</span> <em>Environmental Pollution</em> 260 (May): 113971. <a href="https://doi.org/10.1016/j.envpol.2020.113971">https://doi.org/10.1016/j.envpol.2020.113971</a>.
+</div>
+<div id="ref-fisher1943" class="csl-entry" role="doc-biblioentry">
+Fisher, R. A., A. Steven Corbet, and C. B. Williams. 1943. <span>“The Relation Between the Number of Species and the Number of Individuals in a Random Sample of an Animal Population.”</span> <em>Journal of Animal Ecology</em> 12 (1): 42–58. <a href="https://doi.org/10.2307/1411">https://doi.org/10.2307/1411</a>.
+</div>
+<div id="ref-kim2014" class="csl-entry" role="doc-biblioentry">
+Kim, Hongsuck, Byunggoon Kim, Jiyeon Kim, Taeho Lee, and Jaecheul Yu. 2014. <span>“Electricity Generation and Microbial Community in Microbial Fuel Cell Using Low-pH Distillery Wastewater at Different External Resistances.”</span> <em>Journal of Biotechnology</em> 186 (September): 175–80. <a href="https://doi.org/10.1016/j.jbiotec.2014.06.012">https://doi.org/10.1016/j.jbiotec.2014.06.012</a>.
+</div>
+<div id="ref-koleff2003" class="csl-entry" role="doc-biblioentry">
+Koleff, Patricia, Kevin J. Gaston, and Jack J. Lennon. 2003. <span>“Measuring Beta Diversity for Presence<span></span>absence Data.”</span> <em>Journal of Animal Ecology</em> 72 (3): 367–82. <a href="https://doi.org/10.1046/j.1365-2656.2003.00710.x">https://doi.org/10.1046/j.1365-2656.2003.00710.x</a>.
+</div>
+<div id="ref-liu2019" class="csl-entry" role="doc-biblioentry">
+Liu, Min, Yuanyuan Xue, and Jun Yang. 2019. <span>“Rare Plankton Subcommunities Are Far More Affected by DNA Extraction Kits Than Abundant Plankton.”</span> <em>Frontiers in Microbiology</em> 10. <a href="https://doi.org/10.3389/fmicb.2019.00454">https://doi.org/10.3389/fmicb.2019.00454</a>.
+</div>
+<div id="ref-mo2018" class="csl-entry" role="doc-biblioentry">
+Mo, Yuanyuan, Wenjing Zhang, Jun Yang, Yuanshao Lin, Zheng Yu, and Senjie Lin. 2018. <span>“Biogeographic Patterns of Abundant and Rare Bacterioplankton in Three Subtropical Bays Resulting from Selective and Neutral Processes.”</span> <em>The ISME Journal</em> 12 (9): 2198–2210. <a href="https://doi.org/10.1038/s41396-018-0153-6">https://doi.org/10.1038/s41396-018-0153-6</a>.
+</div>
+<div id="ref-mori" class="csl-entry" role="doc-biblioentry">
+Mori, Koji, Kaoru Yamaguchi, Yayoi Sakiyama, Tetsuro Urabe, and Ken-ichiroYR 2009 Suzuki. n.d. <span>“Caldisericum Exile Gen. Nov., Sp. Nov., An Anaerobic, Thermophilic, Filamentous Bacterium of a Novel Bacterial Phylum, Caldiserica Phyl. Nov., Originally Called the Candidate Phylum Op5, and Description of Caldisericaceae Fam. Nov., Caldisericales Ord. Nov. And Caldisericia Classis Nov.”</span> <em>International Journal of Systematic and Evolutionary Microbiology</em> 59 (11): 2894–98. <a href="https://doi.org/10.1099/ijs.0.010033-0">https://doi.org/10.1099/ijs.0.010033-0</a>.
+</div>
+<div id="ref-su2020" class="csl-entry" role="doc-biblioentry">
+Su, Zhiguo, Aolin Li, Jiayu Chen, Bei Huang, Qinglin Mu, Lyujun Chen, and Donghui Wen. 2020. <span>“Wastewater Discharge Drives ARGs Spread in the Coastal Area: A Case Study in Hangzhou Bay, China.”</span> <em>Marine Pollution Bulletin</em> 151 (February): 110856. <a href="https://doi.org/10.1016/j.marpolbul.2019.110856">https://doi.org/10.1016/j.marpolbul.2019.110856</a>.
+</div>
+<div id="ref-tian2017" class="csl-entry" role="doc-biblioentry">
+Tian, Shaonan, Zhe Tian, Hong Yang, Min Yang, and Yu Zhang. 2017. <span>“Detection of Viable Bacteria During Sludge Ozonation by the Combination of ATP Assay with PMA-Miseq Sequencing.”</span> <em>Water</em> 9 (3): 166. <a href="https://doi.org/10.3390/w9030166">https://doi.org/10.3390/w9030166</a>.
+</div>
+<div id="ref-xue2018" class="csl-entry" role="doc-biblioentry">
+Xue, Yuanyuan, Huihuang Chen, Jun R. Yang, Min Liu, Bangqin Huang, and Jun Yang. 2018. <span>“Distinct Patterns and Processes of Abundant and Rare Eukaryotic Plankton Communities Following a Reservoir Cyanobacterial Bloom.”</span> <em>The ISME Journal</em> 12 (9): 2263–77. <a href="https://doi.org/10.1038/s41396-018-0159-0">https://doi.org/10.1038/s41396-018-0159-0</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    setTimeout(function() {
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+</body></html>
