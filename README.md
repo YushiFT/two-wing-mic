@@ -58,7 +58,7 @@ Contact Information
   * ORCID ID: 0000-0002-3809-2129
   * Email: yushi.tang@princeton.edu
 
-* Alternative Contact:
+* Primary Contact:
   * Name: Donghui Wen
   * Affiliation: Peking University
   * ORCID ID: 0000-0002-1301-989X
