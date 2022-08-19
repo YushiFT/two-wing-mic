@@ -23,13 +23,13 @@ Dataset Version and Release History
 
 * Current Version:
   * Number: 1.0
-  * Date: 2021-03-15
+  * Date: 2022-08-15
   * Persistent identifier: <https://doi:10.1007/s00248-019-01421-8>
 
 Dataset Attribution and Usage
 -----------------------------
 
-* Dataset Title: TMEN Dataset
+* Dataset Title: Two-Wing-Structure Dataset
 
 * Persistent Identifier: <https://doi:10.1007/s00248-019-01421-8>
 
@@ -37,7 +37,7 @@ Dataset Attribution and Usage
 
   * Creators: Yushi Tang and Donghui Wen
 
-* Date of Issue: 2021-03-15
+* Date of Issue: 2022-08-15
 
 * Publisher: Peking University
 
