@@ -11,11 +11,12 @@ Reference Information and Reproducible Analysis
 Provenance for this README
 --------------------------
 
-* File name: README_TMEN_Data.txt
+* File name: README.md
 * Author: Yushi Tang
 * Other contributors: Donghui Wen
 * Date created: 2021-03-01
 * Date modified: 2021-03-15
+
 
 Dataset Version and Release History
 -----------------------------------
@@ -47,7 +48,7 @@ Dataset Attribution and Usage
 * Suggested Citations:
 
   * Dataset citation:
-    > Tang, Y., Dai, T., Su, Z. et al. A Tripartite Microbial-Environment Network Indicates How Crucial Microbes Influence the Microbial Community Ecology. Microb Ecol (2019) <https://doi.org/10.1007/s00248-019-01421-8>.
+    > Tang, Y., Chen, W., Su, Z., Wei, J., Zheng, Y., Xiong, F., Chen, L., Wen, D. The *Two-Wing* admixed structure of environmental microbial communities. (2022) (under review)
 
 Contact Information
 -------------------
@@ -68,6 +69,17 @@ Contact Information
 
 - - -
 
+Methodological Information
+==========================
+
+* Methods of data collection: The data were collected following the procedures developed by Wen Lab at Peking University, as detailed in Tang Y. et al. (2022) (under review).
+
+* Methods of data processing: Raw measurements were compiled into one CSV with minimal processing, as detailed in "two_wing_structure_cookbook.pdf".
+
+* Software-specific information: The dataset and codebook do not require any specific software to read and reuse, but the data package follows the Frictionless Data framework, which has libraries for multiple languages: <https://frictionlessdata.io/tooling/libraries/#data-package>.
+
+- - -
+
 Additional Dataset Metadata
 ===========================
 
@@ -80,7 +92,7 @@ Relations to Other Datasets and/or Publications
 -----------------------------------------------
 
 * References for replication code for the dataset and related analyses:
-  * Tang, Y., Dai, T., Su, Z. et al. A Tripartite Microbial-Environment Network Indicates How Crucial Microbes Influence the Microbial Community Ecology. Microb Ecol (2019) <https://doi.org/10.1007/s00248-019-01421-8>.
+  * Tang, Y., Chen, W., Su, Z., Wei, J., Zheng, Y., Xiong, F., Chen, L., Wen, D. The *Two-Wing* admixed structure of environmental microbial communities. (2022) (under review)
 
  
 Dates and Locations
@@ -89,17 +101,6 @@ Dates and Locations
 * Dates of data collection: start=2015-04-01; end=2015-04-30
 
 * Geographic locations of data collection: Hangzhou Bay, Zhejiang, PRC 
-
-- - -
-
-Methodological Information
-==========================
-
-* Methods of data collection: The data were collected following the procedures developed by Wen Lab at Peking University, as detailed in Dai, Tianjiao, et al. 2016 <https://doi.org/10.1093/femsec/fiw203>.
-
-* Methods of data processing: Raw measurements were compiled into one CSV with minimal processing, as detailed in "TMEN_Codebook_2021-03-15.pdf".
-
-* Software-specific information: The dataset and codebook do not require any specific software to read and reuse, but the data package follows the Frictionless Data framework, which has libraries for multiple languages: <https://frictionlessdata.io/tooling/libraries/#data-package>.
 
 - - -
 
