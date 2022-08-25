@@ -246,28 +246,26 @@ ggplot() +
 
 ## Figure 3. Dimensionality reduction analysis of $\mu$-wing and $k$-wing sub-community
 
-### PCA
+### PCoA
 
-```{r pca, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+```{r pcoa_hz, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 # for bay
 bay_plt <- data.frame()
 lab_site <- c(rep(c('HB1','HB2','HB3','HB4','HB5','HB6','HB7','HB8','HB9','HB10'), each=3))
-load('../output/HZ/pca_bay.RData')
-pcs_mu  <- data.frame(t(pca_mu$pc))
-pcs_k   <- data.frame(t(pca_k$pc))
-pcs_all <- data.frame(t(pca_all$pc))
-bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_mu$PC1,
-                                     PC2=pcs_mu$PC2,
+load('../output/HZ/pcoa_bay.RData')
+
+bay_plt <- rbind(bay_plt, data.frame(PCoA1=pcoa_mu$vectors[,1],
+                                     PCoA2=pcoa_mu$vectors[,2],
                                      Site=lab_site,
                                      Wing='mu-wing',
                                      Region='Bay'))
-bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_k$PC1,
-                                     PC2=pcs_k$PC2,
+bay_plt <- rbind(bay_plt, data.frame(PCoA1=pcoa_k$vectors[,1],
+                                     PCoA2=pcoa_k$vectors[,2],
                                      Site=lab_site,
                                      Wing='k-wing',
                                      Region='Bay'))
-bay_plt <- rbind(bay_plt, data.frame(PC1=pcs_all$PC1,
-                                     PC2=pcs_all$PC2,
+bay_plt <- rbind(bay_plt, data.frame(PCoA1=pcoa_all$vectors[,1],
+                                     PCoA2=pcoa_all$vectors[,2],
                                      Site=lab_site,
                                      Wing='all',
                                      Region='Bay'))
@@ -276,11 +274,11 @@ bay_plt$Site <- factor(bay_plt$Site,
 bay_plt$Wing <- factor(bay_plt$Wing,
                        levels=c('all','mu-wing','k-wing'))
 
-g_bay <- ggplot(bay_plt, aes(x=PC1, y=PC2, color=Site)) +
+g_bay <- ggplot(bay_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
   geom_point(size=0.8, alpha=0.8) +
   theme_bw() +
-  xlab(TeX('PC1')) +
-  ylab(TeX('PC2')) +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
   ggtitle('') +
   theme(plot.title=element_text(hjust=0, size=rel(0.0)),
         aspect.ratio=1,
@@ -288,37 +286,35 @@ g_bay <- ggplot(bay_plt, aes(x=PC1, y=PC2, color=Site)) +
         panel.grid.minor = element_blank(),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle=-90, vjust=0.5, hjust=0),
         axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 12),
         legend.title = element_text(color = "black", size = 12),
-        legend.text = element_text(color = "black", size = 8),
-        strip.text = element_text(size = 12)) +
+        legend.text = element_text(color = "black", size = 8)) +
   scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
                                '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
                                '#cab2d6','#6a3d9a')) +
   facet_grid2(Wing~Region, scales='free', 
-              independent = "all", labeller='label_parsed')
+              independent = "all",labeller='label_parsed')
 
 # for era
 era_plt <- data.frame()
 lab_site <- c(rep(c('SY1','SY2','SY3','SY4','SY5','SY6',
                     'JX1','JX2','JX3','JX4','JX5','JX6'), each=3))
-load('../output/HZ/pca_era.RData')
-pcs_mu  <- data.frame(t(pca_mu$pc))
-pcs_k   <- data.frame(t(pca_k$pc))
-pcs_all <- data.frame(t(pca_all$pc))
-era_plt <- rbind(era_plt, data.frame(PC1=pcs_mu$PC1,
-                                     PC2=pcs_mu$PC2,
+load('../output/HZ/pcoa_era.RData')
+
+era_plt <- rbind(era_plt, data.frame(PCoA1=pcoa_mu$vectors[,1],
+                                     PCoA2=pcoa_mu$vectors[,2],
                                      Site=lab_site,
                                      Wing='mu-wing',
                                      Region='ERA'))
-era_plt <- rbind(era_plt, data.frame(PC1=pcs_k$PC1,
-                                     PC2=pcs_k$PC2,
+era_plt <- rbind(era_plt, data.frame(PCoA1=pcoa_k$vectors[,1],
+                                     PCoA2=pcoa_k$vectors[,2],
                                      Site=lab_site,
                                      Wing='k-wing',
                                      Region='ERA'))
-era_plt <- rbind(era_plt, data.frame(PC1=pcs_all$PC1,
-                                     PC2=pcs_all$PC2,
+era_plt <- rbind(era_plt, data.frame(PCoA1=pcoa_all$vectors[,1],
+                                     PCoA2=pcoa_all$vectors[,2],
                                      Site=lab_site,
                                      Wing='all',
                                      Region='ERA'))
@@ -327,11 +323,11 @@ era_plt$Site <- factor(era_plt$Site,
 era_plt$Wing <- factor(era_plt$Wing,
                        levels=c('all','mu-wing','k-wing'))
 
-g_era <- ggplot(era_plt, aes(x=PC1, y=PC2, color=Site)) +
+g_era <- ggplot(era_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
   geom_point(size=0.8, alpha=0.8) +
   theme_bw() +
-  xlab(TeX('PC1')) +
-  ylab(TeX('PC2')) +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
   ggtitle('') +
   theme(plot.title=element_text(hjust=0, size=rel(0.0)),
         aspect.ratio=1,
@@ -339,11 +335,11 @@ g_era <- ggplot(era_plt, aes(x=PC1, y=PC2, color=Site)) +
         panel.grid.minor = element_blank(),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle=-90, vjust=0.5, hjust=0),
         axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 12),
         legend.title = element_text(color = "black", size = 12),
-        legend.text = element_text(color = "black", size = 8),
-        strip.text = element_text(size = 12)) +
+        legend.text = element_text(color = "black", size = 8)) +
   scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
                                '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
                                '#cab2d6','#6a3d9a','#ffff99','#b15928')) +
@@ -356,28 +352,24 @@ plot_grid(NULL, g_bay, g_era, NULL,
           rel_widths = c(1,5,5,1), nrow=1, align='v')
 ```
 
-```{r pca_ao, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
-
+```{r pcoa_ao, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
 dat_plt <- data.frame()
 vec_process <- c('influent','anoxic','oxic','effluent')
 lab_site <- c(rep(c('LS','SF','CZ','BA','YF','GB','YTSW','XHC','ZC','YT','YN'), each=3))
 for(item in vec_process){
-  load(paste0('../output/AO_ASV/pca_',item,'.RData'))
-  pcs_mu  <- data.frame(t(pca_mu$pc))
-  pcs_k   <- data.frame(t(pca_k$pc))
-  pcs_all <- data.frame(t(pca_all$pc))
-  dat_plt <- rbind(dat_plt, data.frame(PC1=pcs_mu$PC1,
-                                       PC2=pcs_mu$PC2,
+  load(paste0('../output/AO_ASV/pcoa_',item,'.RData'))
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_mu$vectors[,1],
+                                       PCoA2=pcoa_mu$vectors[,2],
                                        Site=lab_site,
                                        Wing='mu-wing',
                                        Procedure=str_to_title(item)))
-  dat_plt <- rbind(dat_plt, data.frame(PC1=pcs_k$PC1,
-                                       PC2=pcs_k$PC2,
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_k$vectors[,1],
+                                       PCoA2=pcoa_k$vectors[,2],
                                        Site=lab_site,
                                        Wing='k-wing',
                                        Procedure=str_to_title(item)))
-  dat_plt <- rbind(dat_plt, data.frame(PC1=pcs_all$PC1,
-                                       PC2=pcs_all$PC2,
+  dat_plt <- rbind(dat_plt, data.frame(PCoA1=pcoa_all$vectors[,1],
+                                       PCoA2=pcoa_all$vectors[,2],
                                        Site=lab_site,
                                        Wing='all',
                                        Procedure=str_to_title(item)))
@@ -388,72 +380,71 @@ dat_plt$Wing <- factor(dat_plt$Wing, levels=c('all','mu-wing','k-wing'))
 dat_plt$Procedure <- factor(dat_plt$Procedure, levels=str_to_title(vec_process))
 
 
-g_pre <- ggplot(dat_plt, aes(x=PC1, y=PC2, color=Site)) +
+g_pre <- ggplot(dat_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
   geom_point() +
   theme_bw() +
-  xlab(TeX('PC1')) +
-  ylab(TeX('PC2')) +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
   ggtitle('') +
   theme(plot.title=element_text(hjust=0, size=rel(0.0)),
-        #legend.position = "none",
         aspect.ratio=1,
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle=-90, vjust=0.5, hjust=0),
         axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 12),
         legend.title = element_text(color = "black", size = 12),
-        legend.text = element_text(color = "black", size = 8),
-        strip.text = element_text(size = 12)) +
+        legend.text = element_text(color = "black", size = 8)) +
   scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
                                '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
                                '#cab2d6','#6a3d9a','#ffff99')) +
   facet_grid2(Wing~Procedure, scales='free',
-              labeller='label_parsed') 
+              independent = "all",labeller='label_parsed')
 
 g_leg <- get_legend(g_pre)
 
 
-g_main <- ggplot(dat_plt, aes(x=PC1, y=PC2, color=Site)) +
+g_main <- ggplot(dat_plt, aes(x=PCoA1, y=PCoA2, color=Site)) +
   geom_point(size=0.8, alpha=0.8) +
   theme_bw() +
-  xlab(TeX('PC1')) +
-  ylab(TeX('PC2')) +
+  xlab(TeX('PCoA1')) +
+  ylab(TeX('PCoA2')) +
   ggtitle('') +
   theme(plot.title=element_text(hjust=0, size=rel(0.0)),
-        legend.position = "none",
         aspect.ratio=1,
+        legend.position="none",
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(size = 8),
+        axis.text.x = element_text(size = 8, angle=-90, vjust=0.5, hjust=0),
         axis.text.y = element_text(size = 8),
         strip.text = element_text(size = 12)) +
   scale_colour_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c',
                                '#fb9a99','#e31a1c','#fdbf6f','#ff7f00',
                                '#cab2d6','#6a3d9a','#ffff99')) +
   facet_grid2(Wing~Procedure, scales='free', 
-              independent = "all", labeller='label_parsed')
+              independent = "all",labeller='label_parsed')
 
 plot_grid(g_main, g_leg,
           rel_widths = c(5, 1), nrow=1)
 ```
 
-### PCoA and CCA
+### PCA 
 
-Run `../figures/vignettes/pcoa_hz.Rmd` and `../figures/vignettes/pcoa_ao.Rmd`
+Follow similar algorithm as above. Specifically, run `../figures/vignettes/pca_hz.Rmd` and `../figures/vignettes/pca_ao.Rmd`
 
-#### CCA
+### CCA
 
-Run `../figures/vignettes/cca_ao_ori.Rmd`
+Follow similar algorithm as above. Specifically, run `../figures/vignettes/cca_ao_ori.Rmd`
 
 ## Figure 4. The *Two-Wing* structure generalizes relative-abundance-based categorizing method
 
 ### Using *Method 0* to identify microbial categories
 
-```{r mu_k_category, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+```{r mu_k_category, echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
 # load parameters mle
 vec_process <- c('influent','anoxic','oxic','effluent')
 param_plt <- data.frame()
