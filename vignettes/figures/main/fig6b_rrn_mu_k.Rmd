@@ -1,0 +1,110 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+# run ../hz_asv/rrn_hz_mu_k.Rmd
+# run ../ao_asv/rrn_ao_mu_k.Rmd
+```
+
+```{r crrn_anova_violin, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+load('../../../output/HZ/crrn_asv_5v8.RData')
+load('../../../output/AO_ASV/crrn_asv_5v8.RData')
+
+rrn <- rbind(ao_rrn_k, ao_rrn_mu, hz_rrn_k, hz_rrn_mu)
+
+
+rrn$Process <- factor(rrn$Process,
+                      levels=c('Bay','ERA',
+                               'Influent','Anoxic','Oxic','Effluent'))
+
+rrn$Wing  <- factor(rrn$Wing,
+                    levels=c('mu','k'))
+
+rrn$Wing.Data  <- factor(rrn$Wing.Data,
+                         levels=c('mu.AO','k.AO','mu.HZ','k.HZ'))
+
+ggplot() +
+  geom_violin(data=rrn, mapping=aes(x=Wing, y=crrn, color=Wing.Data),fill='#f2f2f2', trim=FALSE) +
+  geom_point(data=rrn, mapping=aes(x=Wing, y=mean, color=Wing.Data)) +
+  geom_errorbar(data=rrn, mapping=aes(x=Wing, ymin=ci_l, ymax=ci_u, color=Wing.Data), width=0.08) +
+  ylab(TeX('$c-rrn$')) +
+  xlab(TeX('Wing')) +
+  facet_wrap(Process~., nrow=1) +
+  scale_x_discrete(labels=unname(TeX(c('$\\mu$','$k$')))) +
+  scale_colour_manual(values = c('#4daf4a','#984ea3','#e41a1c','#377eb8'),
+                      labels=unname(TeX(c('$\\mu_{AO}$','$k_{AO}$','$\\mu_{HZ}$','$k_{HZ}$')))) +
+  theme_bw() +
+  theme(aspect.ratio=5,
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9),
+        legend.position='bottom') +
+  guides(color = guide_legend(nrow = 1))
+
+```
+
+
+```{r eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
+load('../../../output/HZ/crrn_asv_5v8.RData')
+load('../../../output/AO_ASV/crrn_asv_5v8.RData')
+
+crrn_k_bay <- hz_rrn_k[hz_rrn_k$Process=='Bay',]$crrn
+crrn_mu_bay <- hz_rrn_mu[hz_rrn_mu$Process=='Bay',]$crrn
+t.test(crrn_k_bay, crrn_mu_bay, var.equal=TRUE)
+
+crrn_k_era <- hz_rrn_k[hz_rrn_k$Process=='ERA',]$crrn
+crrn_mu_era <- hz_rrn_mu[hz_rrn_mu$Process=='ERA',]$crrn
+t.test(crrn_k_era, crrn_mu_era, var.equal=TRUE)
+
+crrn_k_influent  <- ao_rrn_k[ao_rrn_k$Process=='Influent',]$crrn
+crrn_mu_influent <- ao_rrn_mu[ao_rrn_mu$Process=='Influent',]$crrn
+t.test(crrn_k_influent, crrn_mu_influent, var.equal=TRUE)
+
+crrn_k_anoxic  <- ao_rrn_k[ao_rrn_k$Process=='Anoxic',]$crrn
+crrn_mu_anoxic <- ao_rrn_mu[ao_rrn_mu$Process=='Anoxic',]$crrn
+t.test(crrn_k_anoxic, crrn_mu_anoxic, var.equal=TRUE)
+
+crrn_k_oxic  <- ao_rrn_k[ao_rrn_k$Process=='Oxic',]$crrn
+crrn_mu_oxic <- ao_rrn_mu[ao_rrn_mu$Process=='Oxic',]$crrn
+t.test(crrn_k_oxic, crrn_mu_oxic, var.equal=TRUE)
+
+crrn_k_effluent  <- ao_rrn_k[ao_rrn_k$Process=='Effluent',]$crrn
+crrn_mu_effluent <- ao_rrn_mu[ao_rrn_mu$Process=='Effluent',]$crrn
+t.test(crrn_k_effluent, crrn_mu_effluent, var.equal=TRUE)
+
+```
+
+
+
+
+
+
+
+
+

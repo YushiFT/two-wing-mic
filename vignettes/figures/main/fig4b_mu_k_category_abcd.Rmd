@@ -1,0 +1,135 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+library(matrixStats)   # for matrix computations
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+```{r prepare, echo=FALSE, eval=FALSE, warning=FALSE, message=FALSE}
+# run mu_k_hz_category_abcd.Rmd
+# run mu_k_ao_category_abcd.Rmd
+```
+
+```{r mu_k_hz_category, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+# load parameters mle for HZ data
+vec_region <- c('bay','era')
+param_plt <- data.frame()
+for(item in vec_region){
+  load(paste0('../../../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm_a <- param_gpm_b <- param_gpm_c <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm_a$Region <- str_to_title(item)
+  param_gpm_b$Region <- str_to_title(item)
+  param_gpm_c$Region <- str_to_title(item)
+  param_gpm_a$Method <- 'Method a'
+  param_gpm_b$Method <- 'Method b'
+  param_gpm_c$Method <- 'Method c'
+  # annotate taxa category
+  load(paste0('../../../output/HZ/taxa_category_',item,'_abc.RData'))
+  param_gpm_a$Category <- ifelse(param_gpm_a$ID %in% id_rt_a, 'RT', 'Other')
+  param_gpm_a$Category <- ifelse(param_gpm_a$ID %in% id_at_a, 'AT', param_gpm_a$Category)
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_rt_b, 'RT', 'Other')
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_at_b, 'AT', param_gpm_b$Category)
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_it_b, 'IT', param_gpm_b$Category)
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_rt_c, 'RT', 'Other')
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_at_c, 'AT', param_gpm_c$Category)
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_it_c, 'IT', param_gpm_c$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm_a, param_gpm_b, param_gpm_c)
+
+}
+param_plt$Region <- ifelse(param_plt$Region=='Era','ERA',param_plt$Region)
+
+# load parameters mle for AO data
+vec_process <- c('influent','anoxic','oxic','effluent')
+for(item in vec_process){
+  load(paste0('../../../output/AO_ASV/param_trio_asv_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm_a <- param_gpm_b <- param_gpm_c <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm_a$Region <- str_to_title(item)
+  param_gpm_b$Region <- str_to_title(item)
+  param_gpm_c$Region <- str_to_title(item)
+  param_gpm_a$Method <- 'Method a'
+  param_gpm_b$Method <- 'Method b'
+  param_gpm_c$Method <- 'Method c'
+  # annotate taxa category
+  load(paste0('../../../output/AO_ASV/taxa_category_',item,'_abc.RData'))
+  param_gpm_a$Category <- ifelse(param_gpm_a$ID %in% id_rt_a, 'RT', 'Other')
+  param_gpm_a$Category <- ifelse(param_gpm_a$ID %in% id_at_a, 'AT', param_gpm_a$Category)
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_rt_b, 'RT', 'Other')
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_at_b, 'AT', param_gpm_b$Category)
+  param_gpm_b$Category <- ifelse(param_gpm_b$ID %in% id_it_b, 'IT', param_gpm_b$Category)
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_rt_c, 'RT', 'Other')
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_at_c, 'AT', param_gpm_c$Category)
+  param_gpm_c$Category <- ifelse(param_gpm_c$ID %in% id_it_c, 'IT', param_gpm_c$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm_a, param_gpm_b, param_gpm_c)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+
+
+param_plt$Region <- factor(param_plt$Region,
+                           levels=c('Bay','ERA','Influent', 
+                                    'Anoxic','Oxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','IT','RT'))
+param_plt$Method <- factor(param_plt$Method,
+                           levels=c('Method a','Method b','Method c'))
+
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.18) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_grid(Method~Region) +
+  scale_colour_manual(values = c('#fb8072','#bebada','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size = 7),
+        strip.text = element_text(size = 9),
+        legend.title = element_text(color = "black", size = 10),
+        legend.text = element_text(color = "black", size = 7)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+
+
+```
+
+
+
+
+
+
+
+

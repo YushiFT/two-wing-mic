@@ -1,0 +1,95 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE, results='hide'}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+
+get_legend <- function(p){
+  tmp <- ggplot_gtable(ggplot_build(p))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+```
+
+
+```{r data_prepare, eval=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
+# run ../mic_1/n_shape_mic.Rmd
+# run ../mic_1/u_shape_mic.Rmd
+# run ../mic_1/3_shape_mic.Rmd
+```
+
+```{r mic_plot, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+dat_plt <- data.frame()
+
+load('../../../output/mic_u.RData')
+param_plt$Microbe <- param_plt$mic
+param_plt$Shape  <- 'U-shape'
+dat_plt <- rbind(dat_plt, param_plt)
+
+load('../../../output/mic_ell.RData')
+param_plt$Microbe <- param_plt$mic
+param_plt$Shape  <- 'L-shape'
+dat_plt <- rbind(dat_plt, param_plt)
+
+load('../../../output/mic_lambda.RData')
+param_plt$Microbe <- param_plt$mic
+param_plt$Shape  <- 'Lambda-shape'
+dat_plt <- rbind(dat_plt, param_plt)
+
+dat_plt$Shape <- factor(dat_plt$Shape,
+                        levels=c('Lambda-shape','L-shape','U-shape'))
+
+dat_plt$Microbe <- ifelse(dat_plt$Microbe=='Planococcaceae','F_Planococcaceae',dat_plt$Microbe)
+
+dat_plt$Microbe <- factor(dat_plt$Microbe,
+                          levels=c('Flavobacterium','Lokiarchaeia','Psychrobacter','Woeseia',
+                                   'Acetoanaerobium','Actinomycetaceae','Bacteroides',
+                                   'Chryseomicrobium','Fusibacter','Klebsiella',
+                                   'Oligella','Pseudarcobacter',
+                                   'Bacillus','F_Planococcaceae','Pseudomonas'))
+
+ggplot(data=dat_plt,
+       aes(x=region, y=mu_mean, group=Microbe)) +
+  geom_line(size=0.9, aes(color=Microbe)) +
+  geom_point(size=1.8, aes(color=Microbe)) +
+  ylab(TeX('Mean(\\hat{\\mu})')) +
+  xlab(TeX('Region/Stage')) +
+  ggtitle(TeX('')) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Shape~., scale='free',labeller='label_parsed') +
+  scale_colour_manual(values = c('#6a3d9a','#fccde5','#cab2d6','#810f7c',
+                                 '#fdbf6f','#e08214','#ff7f00','#ffff33',
+                                 '#fb8072','#b30000','#e31a1c','#c51b7d',
+                                 '#a6cee3','#1f78b4','#b2df8a')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position = 'bottom',
+        legend.title = element_text(size=12),
+        legend.text = element_text(size=8),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0, angle = -45),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12)) +
+  guides(color=guide_legend(ncol=4, byrow=FALSE))
+
+```
+
+
+
+
+
+
+
+
