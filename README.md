@@ -18,6 +18,13 @@ Provenance for this README
 * Date modified: 2022-08-15
 
 
+Roproducible Analysis
+---------------------
+
+* Source: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.Rmd>
+* Output: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.pdf>
+
+
 Dataset Version and Release History
 -----------------------------------
 
