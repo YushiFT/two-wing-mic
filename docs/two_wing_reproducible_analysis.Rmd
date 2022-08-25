@@ -1,0 +1,249 @@
+---
+title: "Reproducible Analysis: The Two-Wing admixed structure of environmental microbial communities"
+author: "Yushi Tang"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r library, echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+library(ggplot2)       # for generating plots
+library(latex2exp)     # for plot text latex
+library(cowplot)       # for merging plots
+library(gridExtra)     # for griding plots
+library(grid)          # for griding plots
+library(stringr)       # for uppercase first letter
+```
+
+# Preface
+
+This document provides reproducible research records for our manuscript about the Two-Wing admixed structure of environmental microbial communities. We provide step-by-step instructions for main results in both the original article and the supplemental materials.
+
+# Main Figures 
+
+## Figure 1. Observed abundance distribution
+
+### The over-dispersion pattern of microbial communities
+
+```{r mean_var_plot_hz, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+load('../output/HZ/hz_mean_var.RData')
+dat_plt$Region <- factor(dat_plt$Region, levels=c('Bay','ERA JX','ERA SY'))
+ggplot(dat_plt, aes(x=miseqmean, y=miseqvar)) + 
+    geom_point(alpha=0.36, size=1.5) +
+    xlab(TeX('Abundance Mean ($\\mu$)')) +
+    ylab(TeX('Abundance Variance ($v$)')) +
+    xlim(0,3000) +
+    ylim(0,4e7) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.title.x = element_text(size = 10),
+          axis.title.y = element_text(size = 10),
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7)) +
+    theme(aspect.ratio=1) +
+    facet_grid(~Region)
+```
+
+
+```{r mean_var_plot_ao, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE}
+load('../output/AO_ASV/ao_mean_var.RData')
+dat_plt$Industry <- factor(dat_plt$Industry, levels=c('Dye','Pharmaceutical','Pesticide'))
+dat_plt$Process <- factor(dat_plt$Process, levels=c('Influent','Anoxic','Oxic','Effluent'))
+ggplot(dat_plt, aes(x=miseqmean, y=miseqvar)) + 
+    geom_point(alpha=0.36, size=1.5) +
+    xlab(TeX('Abundance Mean ($\\mu$)')) +
+    ylab(TeX('Abundance Variance ($v$)')) +
+    xlim(0,1000) +
+    ylim(0,4e6) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.title.x = element_text(size = 10),
+          axis.title.y = element_text(size = 10),
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7)) +
+    theme(aspect.ratio=1) +
+    facet_grid(Industry~Process)
+```
+
+## Figure 2. The *Two-Wing* admixed structure
+
+### Before boundary refining (Figure 2A)
+
+```{r two_wing_prerefine, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+param_plt <- data.frame()
+# load AO parameter trio
+vec_process <- c('influent','anoxic','oxic','effluent')
+for(item in vec_process){
+  file_in <- paste0('../output/AO_ASV/param_trio_asv_',item,'.RData')
+  load(file_in)
+  param_trio$ID <- rownames(param_trio)
+  # extract poisson distributed microbes
+  param_poisson <- param_trio[param_trio$k==Inf,]
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # extract zero-inflated microbes
+  param_zeroinf <- param_trio[param_trio$pi0!=0,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  param_plt <- rbind(param_plt, param_gpm)
+}
+
+# load HZ parameter trio
+vec_process <- c('bay','era')
+for(item in vec_process){
+  file_in <- paste0('../output/HZ/param_trio_',item,'.RData')
+  load(file_in)
+  param_trio$ID <- rownames(param_trio)
+  # extract poisson distributed microbes
+  param_poisson <- param_trio[param_trio$k==Inf,]
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # extract zero-inflated microbes
+  param_zeroinf <- param_trio[param_trio$pi0!=0,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  param_plt <- rbind(param_plt, param_gpm)
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+
+param_plt$mu_up <- 4.457417
+param_plt$mu_up <- ifelse(param_plt$Procedure=='ERA', 
+                          4.881282, param_plt$mu_up)
+param_plt$mu_up <- ifelse(param_plt$Procedure=='Influent', 
+                          7.142101, param_plt$mu_up)
+param_plt$mu_up <- ifelse(param_plt$Procedure=='Anoxic', 
+                          5.209871, param_plt$mu_up)
+param_plt$mu_up <- ifelse(param_plt$Procedure=='Oxic', 
+                          4.299989, param_plt$mu_up)
+param_plt$mu_up <- ifelse(param_plt$Procedure=='Effluent', 
+                          4.405847, param_plt$mu_up)
+
+
+param_plt$k_low <- 10.452344
+param_plt$k_low <- ifelse(param_plt$Procedure=='ERA', 
+                          10.452344, param_plt$k_low)
+param_plt$k_low <- ifelse(param_plt$Procedure=='Influent', 
+                          8.844581, param_plt$k_low)
+param_plt$k_low <- ifelse(param_plt$Procedure=='Anoxic', 
+                          8.673801, param_plt$k_low)
+param_plt$k_low <- ifelse(param_plt$Procedure=='Oxic', 
+                          8.673801, param_plt$k_low)
+param_plt$k_low <- ifelse(param_plt$Procedure=='Effluent', 
+                          8.812485, param_plt$k_low)
+
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=pi0),alpha=0.6,size=0.24) +
+  geom_vline(data=param_plt, aes(xintercept = mu_up), 
+             linetype="dotdash", color = "black", size=0.12) +
+  geom_vline(data=param_plt, aes(xintercept = k_low), 
+             linetype="dotdash", color = "black", size=0.12) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  scale_color_continuous(type = "viridis") +
+  facet_wrap(Procedure~., scale='free', nrow=2) +
+  labs(color=TeX('$\\hat{\\pi}_0$')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9))
+
+```
+
+### After boundary refining (Figure 2B)
+
+```{r two_wing_postrefine, echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO_ASV/param_trio_asv_',item,'.RData'))
+  load(paste0('../output/AO_ASV/mic_od_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO_ASV/mic_id_mu_k_',item,'.RData'))
+  param_gpm$Wing <- ifelse(param_gpm$ID %in% id_mu, 'mu', 'Other')
+  param_gpm$Wing <- ifelse(param_gpm$ID %in% id_k,  'k', param_gpm$Wing)
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_process <- c('bay','era')
+for(item in vec_process){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  load(paste0('../output/HZ/mic_od_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/mic_id_mu_k_',item,'.RData'))
+  param_gpm$Wing <- ifelse(param_gpm$ID %in% id_mu, 'mu', 'Other')
+  param_gpm$Wing <- ifelse(param_gpm$ID %in% id_k, 'k', param_gpm$Wing)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Wing <- factor(param_plt$Wing,
+                             levels=c('mu','k', 'Other'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Wing), alpha=0.36,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#984ea3','#4daf4a'),
+                      labels = unname(TeX(c('$\\mu$','$k$')))) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 10),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+
+```
+
+```{r SI, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+sessionInfo()
+```
+
