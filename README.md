@@ -24,14 +24,14 @@ Dataset Version and Release History
 * Current Version:
   * Number: 1.0
   * Date: 2022-08-15
-  * Persistent identifier: <https://doi:10.1007/s00248-019-01421-8>
+  * Persistent identifier: [manuscript under review]
 
 Dataset Attribution and Usage
 -----------------------------
 
 * Dataset Title: Two-Wing-Structure Dataset
 
-* Persistent Identifier: <https://doi:10.1007/s00248-019-01421-8>
+* Persistent Identifier: [manuscript under review]
 
 * Dataset Contributors:
 
