@@ -10,7 +10,7 @@ Provenance for this README
 * Date created: 2022-08-15
 * Date modified: 2022-08-25
 
-![test](https://github.com/YushiFT/two-wing-mic/tree/main/vignettes/figures/cover_graphic.png)
+![test](https://github.com/YushiFT/two-wing-mic/tree/main/vignettes/figures/cover_graphic_small.png)
 
 
 Roproducible Analysis
