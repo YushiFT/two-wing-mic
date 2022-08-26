@@ -2,7 +2,7 @@ Reference Information and Reproducible Analysis
 =====================
 
 
-<img src="https://user-images.githubusercontent.com/46493113/186980071-6ac5a5ae-fc69-44fe-9aa8-558cfc1f1c73.png)" width="50%"></img>
+<img src="https://user-images.githubusercontent.com/46493113/186980876-c0f19069-589f-4f51-bdfb-12014ca3ff0b.png" width="50%"></img>
 
 
 Provenance for this README
