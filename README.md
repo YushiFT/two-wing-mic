@@ -2,7 +2,7 @@ Reference Information and Reproducible Analysis
 =====================
 
 
-<img src="https://github.com/YushiFT/two-wing-mic/issues/1#issue-1352671797" width="50%"></img>
+<img src="https://user-images.githubusercontent.com/46493113/186980071-6ac5a5ae-fc69-44fe-9aa8-558cfc1f1c73.png)" width="50%"></img>
 
 
 Provenance for this README
