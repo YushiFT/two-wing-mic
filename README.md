@@ -1,10 +1,3 @@
-<!---
-This README uses Markdown syntax, though it is saved in .txt format.
-To view the file with its intended text formatting, save a copy as a .md file.
-Then you can open it with the browser or text viewer of your choice.
-For details on Markdown syntax, see <https://daringfireball.net/projects/markdown/>.
---->
-
 Reference Information and Reproducible Analysis
 =====================
 
@@ -16,6 +9,8 @@ Provenance for this README
 * Other contributors: Donghui Wen
 * Date created: 2022-08-15
 * Date modified: 2022-08-25
+
+![](https://github.com/YushiFT/two-wing-mic/tree/main/vignettes/figures/cover_graphic.png)
 
 
 Roproducible Analysis
