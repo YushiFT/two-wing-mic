@@ -1,6 +1,10 @@
 Reference Information and Reproducible Analysis
 =====================
 
+
+<img src="https://github.com/YushiFT/two-wing-mic/tree/main/vignettes/figures/cover_graphic.png" width="5%"></img>
+
+
 Provenance for this README
 --------------------------
 
@@ -9,8 +13,6 @@ Provenance for this README
 * Other contributors: Donghui Wen
 * Date created: 2022-08-15
 * Date modified: 2022-08-25
-
-<img src="https://github.com/YushiFT/two-wing-mic/tree/main/vignettes/figures/cover_graphic.png" width="5%"></img>
 
 Roproducible Analysis
 ---------------------
