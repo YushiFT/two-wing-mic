@@ -89,7 +89,7 @@ Additional Dataset Metadata
 Acknowledgements
 ----------------
 
-* Funding source: General Project Nos. 51678003 and 51678334 of Natural Science Foundation
+* Funding source: Grant No. 52170185, 51938001, and 52070111 of Natural Science Foundation
 
 Relations to Other Datasets and/or Publications
 -----------------------------------------------
@@ -101,7 +101,7 @@ Relations to Other Datasets and/or Publications
 Dates and Locations
 -------------------
 
-* Dates of data collection: start=2015-04-01; end=2015-04-30
+* Dates of data collection: start=2018-04-01; end=2018-04-30
 
 * Geographic locations of data collection: Hangzhou Bay, Zhejiang, PRC 
 
