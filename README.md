@@ -27,7 +27,7 @@ Main Software
 
 Forum and Open Discussion
 -------------------------
-* Q & A: <https://github.com/YushiFT/two-wing-mic/issues/2>
+* Q & A: <https://github.com/YushiFT/two-wing-mic/issues>
 
 
 Dataset Version and Release History
