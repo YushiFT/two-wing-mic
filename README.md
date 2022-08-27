@@ -25,6 +25,10 @@ Main Software
 
 `PMCosm` (Version 0.1.2): <https://github.com/YushiFT/PMCosm>
 
+Forum and Open Discussion
+-------------------------
+* Q & A: <https://github.com/YushiFT/two-wing-mic/issues/2>
+
 
 Dataset Version and Release History
 -----------------------------------
