@@ -20,6 +20,11 @@ Roproducible Analysis
 * Source: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.Rmd>
 * Output: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.pdf>
 
+Main Software
+-------------
+
+`PMCosm` (Version 0.1.2): <https://github.com/YushiFT/PMCosm>
+
 
 Dataset Version and Release History
 -----------------------------------
