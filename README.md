@@ -23,7 +23,7 @@ Roproducible Analysis
 Main Software
 -------------
 
-`PMCosm` (Version 0.1.2): <https://github.com/YushiFT/PMCosm>
+`PMCosm` (Version 0.1.3): <https://github.com/YushiFT/PMCosm>
 
 Forum and Open Discussion
 -------------------------
