@@ -365,6 +365,7 @@ plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```{r vag_lag_ao_effluent, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/AO/param_trio_effluent.RData')
 load('../output/AO/id_vag_lag_effluent.RData')
+plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```
 
 
