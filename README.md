@@ -123,24 +123,26 @@ Summary Metrics
 ---------------
 
 * File count: 5
-* Total file size: 4.8 MB
-* Range of individual file sizes: 9 KB - 3.2 MB
+* Total file size: 8.3 MB
+* Range of individual file sizes: 9 KB - 4 MB
 * File formats: TXT, PDF
 
 
 Table of Contents
 -----------------
 
-* TwoWing_README.md 9 KB
+* README.md 9 KB
 * TwoWing_hz_asv_2018.txt.zip 1.4 MB
 * TwoWing_ao_asv.txt.zip, 2.9 MB
+* TwoWing_reproducible_analysis.Rmd 13KB
+* TwoWing_reproducible_analysis.pdf 4MB
 
 - - -
 
 File Details
 ============
 
-Details for: TwoWing_README.md
+Details for: README.md
 ----------------------------------------------
 
 * Description: This is the README file you are reading right now--the introduction to the dataset and accompanying documentation files.
@@ -208,7 +210,7 @@ Details for: TwoWing_hz_asv_2018.txt.zip
 
 
 
-Details for: TMEN_Codebook_2021-03-15.pdf
+Details for: TwoWing_reproducible_analysis.pdf
 ------------------------------------------------
 
 * Description: This codebook provides comphrensive documentation for the all of the variables and values in the dataset in a human-readable form. This includes variable naming schemes, labels and descriptions for all variables (including some descriptive statistics), as well as details on all value types and units of measurement.
@@ -218,9 +220,9 @@ Details for: TMEN_Codebook_2021-03-15.pdf
   * Media type: application/pdf
   * Standard: ISO 32000 (<https://www.iso.org/standard/51502.html>; see also <https://www.loc.gov/preservation/digital/formats/fdd/fdd000277.shtml>)
 
-* Size: 3.2 MB
+* Size: 4 MB
 
-* Pages: 72
+* Pages: 14
 
 - - -
 END OF README
