@@ -11,7 +11,7 @@ This document provides reproducible research records for our manuscript about th
 
 # Data and Directories
 
-We would suggest to set up the same directories as the *Two-Wing* paper repository at <https://github.com/YushiFT/two-wing-mic>. Open this markdown file under `your/path/to/docs`. Unzip the two data sets under their original directory, which includes
+We would suggest to set up the same directories as the *Two-Wing* paper repository at <https://github.com/YushiFT/two-wing-mic>. Open this markdown file under `your/path/to/docs`. Unzip the two data sets under their original directory, which include
 
 * HZ data: <https://github.com/YushiFT/two-wing-mic/tree/main/data/HZ/hz_asv_2018.txt.zip>
 
