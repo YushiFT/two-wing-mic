@@ -17,8 +17,8 @@ Provenance for this README
 Roproducible Analysis
 ---------------------
 
-* Source: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.Rmd>
-* Output: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/two_wing_reproducible_analysis.pdf>
+* Source: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/TwoWing_reproducible_analysis.Rmd>
+* Output: <https://github.com/YushiFT/two-wing-mic/tree/main/docs/TwoWing_reproducible_analysis.pdf>
 
 Main Software
 -------------
