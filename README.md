@@ -86,9 +86,7 @@ Methodological Information
 
 * Methods of data collection: The data were collected following the procedures developed by Wen Lab at Peking University, as detailed in Tang Y. et al. (2022) (under review).
 
-* Methods of data processing: Raw measurements were compiled into one CSV with minimal processing, as detailed in "two_wing_structure_cookbook.pdf".
-
-* Software-specific information: The dataset and codebook do not require any specific software to read and reuse, but the data package follows the Frictionless Data framework, which has libraries for multiple languages: <https://frictionlessdata.io/tooling/libraries/#data-package>.
+* Methods of data processing: Raw sequencing data are available in NCBI Sequence Read Archive (SRA) database under the accession number SRP391793 (HZ data) and SRP358829 (AO data), under BioProject PRJNA868875 (HZ data) and PRJNA803938 (AO data).
 
 - - -
 
