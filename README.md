@@ -86,7 +86,7 @@ Methodological Information
 
 * Methods of data collection: The data were collected following the procedures developed by Wen Lab at Peking University, as detailed in Tang Y. et al. (2022) (under review).
 
-* Methods of data processing: Raw sequencing data are available in NCBI Sequence Read Archive (SRA) database under the accession number SRP391793 (HZ data) and SRP358829 (AO data), under BioProject PRJNA868875 (HZ data) and [PRJNA803938](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA803938) (AO data).
+* Methods of data processing: Raw sequencing data are available in NCBI Sequence Read Archive (SRA) database under the accession number SRP391793 (HZ data) and [SRP358829](https://trace.ncbi.nlm.nih.gov/Traces/index.html?view=study&acc=SRP358829) (AO data), under BioProject PRJNA868875 (HZ data) and [PRJNA803938](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA803938) (AO data).
 
 - - -
 
