@@ -1,5 +1,5 @@
 ---
-title: "Reproducible Analysis: The Two-Wing admixed structure of environmental microbial communities"
+title: "Reproducible Analysis: The *Two-Wing* admixed structure of environmental microbial communities"
 author: "Yushi Tang"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -318,7 +318,7 @@ for(region in 1:4){
 
 ### HZ data
 
-#### HZ Bay
+**HZ Bay**
 
 ```{r vag_lag_hz_bay, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/HZ/param_trio_bay.RData')
@@ -326,7 +326,7 @@ load('../output/HZ/id_vag_lag_bay.RData')
 plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```
 
-#### HZ ERA
+**HZ ERA**
 
 ```{r vag_lag_hz_era, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/HZ/param_trio_era.RData')
@@ -336,7 +336,7 @@ plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 
 ### AO data
 
-#### AO *Influent*
+**AO** *Influent*
 
 ```{r vag_lag_ao_influent, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/AO/param_trio_influent.RData')
@@ -344,7 +344,7 @@ load('../output/AO/id_vag_lag_influent.RData')
 plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```
 
-#### AO *Anoxic*
+**AO** *Anoxic*
 
 ```{r vag_lag_ao_anoxic, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/AO/param_trio_anoxic.RData')
@@ -352,7 +352,7 @@ load('../output/AO/id_vag_lag_anoxic.RData')
 plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```
 
-#### AO *Oxic*
+**AO** *Oxic*
 
 ```{r vag_lag_ao_oxic, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/AO/param_trio_oxic.RData')
@@ -360,12 +360,491 @@ load('../output/AO/id_vag_lag_oxic.RData')
 plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
 ```
 
-#### AO *Effluent*
+**AO** *Effluent*
 
 ```{r vag_lag_ao_effluent, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
 load('../output/AO/param_trio_effluent.RData')
 load('../output/AO/id_vag_lag_effluent.RData')
 plot_vag_lag(param_trio, id_vag_lag, zoom_in=TRUE)
+```
+
+# Abundant and Rare Biospheres in the *Two-Wing* Admixed Structure
+
+The *Two-Wing* admixed structure is a generalization and extension of relative-abundance-based categorizing methods. The former one is more sufficient since it delivers all information that abundant and rare biospheres can provide while the *Two-Wing* admixed structure further provides unbiased estimation of the over-dispersion, thereby characterizing species dispersal. 
+
+## Classify abundant and rare taxa by following relative-abundance-based methods
+
+### Categorize taxa for HZ data
+
+```{r abundant_rare_pre_hz, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
+# hz data
+mic <- read.table(file='../data/HZ/hz_asv_2018.txt',
+                  header=TRUE,row.names=1) # 51441 taxa in total
+# construct column id
+bay_loci <- c('HB1.1','HB1.2','HB1.3','HB2.1','HB2.2','HB2.3',
+              'HB3.1','HB3.2','HB3.3','HB4.1','HB4.2','HB4.3',
+              'HB5.1','HB5.2','HB5.3','HB6.1','HB6.2','HB6.3',
+              'HB7.1','HB7.2','HB7.3','HB8.1','HB8.2','HB8.3',
+              'HB9.1','HB9.2','HB9.3','HB10.1','HB10.2','HB10.3')
+era_sy_loci <- c('SY1.1','SY1.2','SY1.3','SY2.1','SY2.2','SY2.3',
+                 'SY3.1','SY3.2','SY3.3','SY4.1','SY4.2','SY4.3',
+                 'SY5.1','SY5.2','SY5.3','SY6.1','SY6.2','SY6.3')
+era_jx_loci <- c('JX1.1','JX1.2','JX1.3','JX2.1','JX2.2','JX2.3',
+                 'JX3.1','JX3.2','JX3.3','JX4.1','JX4.2','JX4.3',
+                 'JX5.1','JX5.2','JX5.3','JX6.1','JX6.2','JX6.3')
+
+# for hz bay
+mic_bay <- mic[,bay_loci] # 51441 taxa
+# filter records with zero counts across all sample sites
+mic_bay <- mic_bay[rowSums(mic_bay)>0,] # 24383 taxa
+# method 0, a, b, and c
+taxa_cat_0_h <- classify_taxa(mic_bay, t_lower=1e-3, method='0')
+taxa_cat_0_l <- classify_taxa(mic_bay, t_lower=1e-4, method='0')
+taxa_cat_a <- classify_taxa(mic_bay, method='a')
+taxa_cat_b <- classify_taxa(mic_bay, method='b')
+taxa_cat_c <- classify_taxa(mic_bay, method='c')
+save(taxa_cat_0_h, taxa_cat_0_l, taxa_cat_a, taxa_cat_b, taxa_cat_c,
+     file='../output/HZ/abundant_rare_taxa_bay.RData')
+
+# for hz era
+mic_era <- mic[,c(era_sy_loci,era_jx_loci)] # 51441 taxa
+# filter records with zero counts across all sample sites
+mic_era <- mic_era[rowSums(mic_era)>0,] # 33606 taxa
+# method 0, a, b, and c
+taxa_cat_0_h <- classify_taxa(mic_era, t_lower=1e-3, method='0')
+taxa_cat_0_l <- classify_taxa(mic_era, t_lower=1e-4, method='0')
+taxa_cat_a <- classify_taxa(mic_era, method='a')
+taxa_cat_b <- classify_taxa(mic_era, method='b')
+taxa_cat_c <- classify_taxa(mic_era, method='c')
+save(taxa_cat_0_h, taxa_cat_0_l, taxa_cat_a, taxa_cat_b, taxa_cat_c,
+     file='../output/HZ/abundant_rare_taxa_era.RData')
+```
+
+### Categorize taxa for AO data
+
+```{r abundant_rare_pre_ao, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
+mic <- read.table('../data/AO/ao_asv.txt')
+# industrial factory names
+id_dye <- c('LS','SF','CZ','BA','YF')
+id_med <- c('GB','YTSW','XHC','ZC')
+id_pes <- c('YT','YN')
+lis_ind <- list(id_dye, id_med, id_pes)
+names(lis_ind) <- c('Dye','Medicine','Pesticide')
+# ao procedures id
+id_inf <- c('Inf1','Inf2','Inf3')
+id_axi <- c('Ax1','Ax2','Ax3')
+id_oxi <- c('Ox1','Ox2','Ox3')
+id_eff <- c('Eff1','Eff2','Eff3')
+lis_pro <- list(id_inf, id_axi, id_oxi, id_eff)
+names(lis_pro) <- c('influent','anoxic','oxic','effluent')
+
+for(region in 1:4){
+  id_col <- c()
+  for(i in 1:length(lis_ind)){
+    id_ind <- lis_ind[[i]]
+    id_pro <- lis_pro[[region]]
+    id_col <- c(id_col,
+                paste0(rep(id_ind, each=length(id_pro)),'_',rep(id_pro, length(id_ind))))
+  }
+  mic_sub <- mic[,id_col]
+  mic_sub <- mic_sub[rowSums(mic_sub)>0,]
+  
+  # method 0, a, b, and c
+  taxa_cat_0_h <- classify_taxa(mic_sub, t_lower=1e-3, method='0')
+  taxa_cat_0_l <- classify_taxa(mic_sub, t_lower=1e-4, method='0')
+  taxa_cat_a <- classify_taxa(mic_sub, method='a')
+  taxa_cat_b <- classify_taxa(mic_sub, method='b')
+  taxa_cat_c <- classify_taxa(mic_sub, method='c')
+  save(taxa_cat_0_h, taxa_cat_0_l, taxa_cat_a, taxa_cat_b, taxa_cat_c,
+       file=paste0('../output/AO/abundant_rare_taxa_',names(lis_pro)[region],'.RData'))
+}
+```
+
+### Visualize abundant and rare biospheres in the *Two-Wing* admixed structure
+
+**Abundant and rare taxa are defined by** *Method 0* **with a higher threshold 0.01$\%$ for rare taxa**
+
+```{r abundant_rare_plot_method0_high, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$AT, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CRT, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CAT, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CRAT, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_region <- c('bay','era')
+for(item in vec_region){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$AT, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CRT, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CAT, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_h$CRAT, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','CAT','CRAT',
+                                      'IT','CRT','RT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#e41a1c','#e78ac3','#ffd92f',
+                                 '#984ea3','#b3de69','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+```
+
+**Abundant and rare taxa are defined by** *Method 0* **with a lower threshold 0.001$\%$ to identify rare taxa**
+
+```{r abundant_rare_plot_method0_low, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$AT, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CRT, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CAT, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CRAT, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_region <- c('bay','era')
+for(item in vec_region){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$AT, 'AT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CRT, 'CRT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CAT, 'CAT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_0_l$CRAT, 'CRAT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','CAT','CRAT',
+                                      'IT','CRT','RT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#e41a1c','#e78ac3','#ffd92f',
+                                 '#984ea3','#b3de69','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+```
+
+**Abundant and rare taxa are defined by** *Method a*
+
+```{r abundant_rare_plot_methoda, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_a$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_a$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_region <- c('bay','era')
+for(item in vec_region){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_a$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_a$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','RT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#e41a1c','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+```
+
+**Abundant and rare taxa are defined by** *Method b*
+
+```{r abundant_rare_plot_methodb, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_region <- c('bay','era')
+for(item in vec_region){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_b$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','IT','RT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#e41a1c','#984ea3','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
+```
+
+
+**Abundant and rare taxa are defined by** *Method c*
+
+```{r abundant_rare_plot_methodc, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+# load parameters mle
+vec_process <- c('influent','anoxic','oxic','effluent')
+param_plt <- data.frame()
+for(item in vec_process){
+  load(paste0('../output/AO/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/AO/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+vec_region <- c('bay','era')
+for(item in vec_region){
+  load(paste0('../output/HZ/param_trio_',item,'.RData'))
+  param_trio$ID <- rownames(param_trio)
+  # extract gamma-poisson distributed microbes
+  param_gpm <- param_trio[param_trio$k!=Inf,]
+  # annotate procedure
+  param_gpm$Procedure <- str_to_title(item)
+  # annotate taxa category
+  load(paste0('../output/HZ/abundant_rare_taxa_',item,'.RData'))
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$RT, 'RT', 'Other')
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$IT, 'IT', param_gpm$Category)
+  param_gpm$Category <- ifelse(param_gpm$ID %in% taxa_cat_c$AT, 'AT', param_gpm$Category)
+  
+  param_plt <- rbind(param_plt, param_gpm)
+
+}
+
+rownames(param_plt) <- c(1:nrow(param_plt))
+param_plt$Procedure <- ifelse(param_plt$Procedure=='Era','ERA',param_plt$Procedure)
+
+param_plt$Procedure <- factor(param_plt$Procedure,
+                              levels=c('Bay','Influent','Oxic', 
+                                       'ERA','Anoxic','Effluent'))
+param_plt$Category <- factor(param_plt$Category,
+                             levels=c('AT','IT','RT'))
+
+ggplot() +
+  geom_point(data=param_plt, 
+             aes(x=log(k), y=log(mu), color=Category), alpha=0.6,size=0.6) +
+  ylab(TeX('\\log{(\\hat{\\mu})}')) +
+  xlab(TeX('\\log{(\\hat{k})}')) +
+  ggtitle(TeX('')) +
+  xlim(-5,20) +
+  ylim(-5,10) +
+  theme_bw() +
+  theme(aspect.ratio=1) +
+  facet_wrap(Procedure~., scale='free') +
+  scale_colour_manual(values = c('#e41a1c','#984ea3','#80b1d3')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 9, vjust = 0.5, hjust = 0),
+        axis.text.y = element_text(size=9),
+        strip.text = element_text(size = 12),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(color = "black", size = 9)) +
+  guides(color = guide_legend(override.aes = list(size = 1.8)))
 ```
 
 
