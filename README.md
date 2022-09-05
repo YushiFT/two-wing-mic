@@ -121,8 +121,8 @@ Summary Metrics
 ---------------
 
 * File count: 5
-* Total file size: 8.3 MB
-* Range of individual file sizes: 9 KB - 4 MB
+* Total file size: 17 MB
+* Range of individual file sizes: 9 KB - 12.6 MB
 * File formats: TXT, PDF
 
 
@@ -132,8 +132,8 @@ Table of Contents
 * README.md 9 KB
 * TwoWing_hz_asv_2018.txt.zip 1.4 MB
 * TwoWing_ao_asv.txt.zip, 2.9 MB
-* TwoWing_reproducible_analysis.Rmd 13KB
-* TwoWing_reproducible_analysis.pdf 4MB
+* TwoWing_reproducible_analysis.Rmd 33KB
+* TwoWing_reproducible_analysis.pdf 12.6MB
 
 - - -
 
@@ -218,9 +218,9 @@ Details for: TwoWing_reproducible_analysis.pdf
   * Media type: application/pdf
   * Standard: ISO 32000 (<https://www.iso.org/standard/51502.html>; see also <https://www.loc.gov/preservation/digital/formats/fdd/fdd000277.shtml>)
 
-* Size: 4 MB
+* Size: 12.6 MB
 
-* Pages: 14
+* Pages: 26
 
 - - -
 END OF README
